@@ -2,7 +2,7 @@
 const nextConfig = {
     reactStrictMode: true,
     output: 'export',
-    basePath: '/Y'
+    basePath: process.env.NODE_ENV == 'production' ? '/Y' : ''
 }
 
 module.exports = nextConfig
