@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const securityMiddleware = require('./middlewares/security')
 require('./utils/db.init').createTables()
 
 const app = express()
@@ -21,5 +22,7 @@ app.listen(port, () => {
 })
 
 app.get('/', (req, res) => {
-  res.status(200).send('Hello world!')
+  res.status(200).send('API of Y with Express.js and PostgeSQL')
 })
+
+app.use('/auth', require('./routes/auth.routes'))
