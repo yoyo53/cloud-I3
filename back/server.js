@@ -6,6 +6,7 @@ require('./utils/db.init').createTables()
 
 const app = express()
 const port = process.env.PORT ?? 3000
+const convRouter = require('./routes/conversations')
 
 app.use(cors({
   "origin": "*",
@@ -15,6 +16,8 @@ app.use(cors({
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
+
+app.use('/conversations', convRouter)
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
