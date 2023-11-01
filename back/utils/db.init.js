@@ -10,14 +10,6 @@ async function createTables() {
             password_hash VARCHAR(255) NOT NULL,
             created_at TIMESTAMPTZ DEFAULT NOW()
         );
-        
-        CREATE TABLE IF NOT EXISTS tokens (
-            id SERIAL PRIMARY KEY,
-            id_user INTEGER NOT NULL,
-            token uuid NOT NULL,
-            expiration_date timestamp NOT NULL,
-            FOREIGN KEY (id_user) REFERENCES users(id) ON DELETE CASCADE
-        );
 
         CREATE TABLE IF NOT EXISTS Conversations (
             id SERIAL PRIMARY KEY,
