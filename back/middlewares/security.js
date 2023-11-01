@@ -11,9 +11,9 @@ exports.verifyToken = async (request, response, next) => {
             next();    
         }
         catch {
-            return response.status(401).json('Invalid token');
+            return response.status(401).json({error: 'Invalid token'});
         }
     } else {
-        return response.status(401).json('No token provided');
+        return response.status(401).json({error: 'No token provided'});
     }
 }
