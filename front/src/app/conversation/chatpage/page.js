@@ -70,7 +70,8 @@ export default function ChatPage() {
   
   <div className="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
     {/* Message input and send button */}
-    <MessageInput />
+    <MessageInput 
+    idconv={id}/>
   </div>
 </div>
 

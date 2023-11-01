@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function MessageInput() {
+function MessageInput({idconv}) {
   const [message, setMessage] = useState('');
 
   const handleChange = (e) => {
@@ -8,9 +8,27 @@ function MessageInput() {
   };
 
   const handleSubmit = () => {
-    // Vous pouvez ajouter ici la logique pour envoyer le message
-    // Par exemple, en appelant une fonction d'envoi vers le backend.
-    // Assurez-vous d'utiliser la valeur de 'message' pour envoyer le contenu du message.
+    const data = { message: message };
+    fetch(`${process.env.ROOTAPI}/conversations/sendmessage/${idconv}`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Erreur lors de la requête.');
+          }
+        })
+        .then((data) => {
+          console.log('Message envoyé avec succès :', data);
+        })
+        .catch((error) => {
+          console.error('Erreur :', error);
+        });
     console.log(`Message envoyé : ${message}`);
     setMessage(''); // Réinitialisez le champ de message après l'envoi.
   };

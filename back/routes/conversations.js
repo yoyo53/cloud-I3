@@ -3,6 +3,7 @@ const router = express.Router()
 //const crypto = require('crypto')
 //const fs = require('fs')
 const conversationqueries = require('../utils/queries/conversations/conversationqueries')
+const messagequeries = require('../utils/queries/conversations/messagequeries')
 
 
 router.get("/getconversations",/*authenticateToken,*/ async (req,res) => {
@@ -10,7 +11,7 @@ router.get("/getconversations",/*authenticateToken,*/ async (req,res) => {
   //Réccupération des conversations d'un utilisateur
   const userID = 1;// récupération de l'id req.user.ID_user
   
-    conversationqueries.getConvByIDuser(1).then((result) => {
+    conversationqueries.getConvByIDuser(userID).then((result) => {
       if (result) {
         for (let i = 0; i < result.length; i++) {
           delete result[i].user_id1;
@@ -24,124 +25,95 @@ router.get("/getconversations",/*authenticateToken,*/ async (req,res) => {
       return res.status(401).json({ error: "invalides" });
     })
   })
-/*
-router.get("/getmessage/:conversationId", authenticateToken, async (req,res) => {
+
+router.get("/getmessage/:conversationId", /*authenticateToken,*/ async (req,res) => {
   //Récupération des messages pour une conversation donnée
-  const userID = req.user.ID_user;
+  const userID = 1;// récupération de l'id req.user.ID_user
   //Décryptage de l'ID de la conversation
-  let conversationId = "";
-  try {
-  const encryptedConversationId = req.params.conversationId;
-  conversationId = cryptoIDMessage.decryptConversationId(encryptedConversationId);
-
-  } catch (error) {
-    return res.status(401).json({ error: "invalides" });
-  }
-
-  let employeeID = "";
-
-  employeequeries.getEmployeeIDByUserID(userID).then((result) => {
+  let conversationId = req.params.conversationId;
+  conversationqueries.getConvByIDuser(userID).then((result) => {
     if (result) {
-      employeeID = result.ID_employee;
-    }
-    else {
-      employeeID = "";
-    }
-    conversationqueries.getConvByIDandIDuser(conversationId,userID,employeeID).then((result) => {
-      if (result) {
-        conversationqueries.getMessageByIDconv(conversationId).then((result) => {
-          const encryptedMessages = result;
-          // Parcourir tous les messages
-          const decryptedMessages = encryptedMessages.map((encryptedMessage) => {
-            const decryptedContent = cryptoIDMessage.decryptMessage(encryptedMessage.Content, encryptedMessage.iv);
-            return {
-              Content: decryptedContent,
-              Creation_date: encryptedMessage.Creation_date,
-              Sender: encryptedMessage.Sender
-            };
-          });
-          return res.status(200).json(decryptedMessages);
-          //return res.status(200).json(result);
-        }).catch((error) => {
-          return res.status(401).json({ error: "invalides" });
-        })
+      for (let i = 0; i < result.length; i++) {
+        delete result[i].user_id1;
+        delete result[i].user_id2;
+        result[i].ID_conversation = result[i].ID_conversation;
       }
-      
-    })
-    .catch((error) => {
-      return res.status(401).json({ error: "invalides" });
-    })
-
+      //return res.status(200).json(result);
+    }
   }).catch((error) => {
-    console.error(error);
+    console.log("error");
     return res.status(401).json({ error: "invalides" });
-  });
-
-
-
-});
-
-
-router.post("/sendmessage/:conversationId",authenticateToken, async (req,res) => {
-  const userID = req.user.ID_user;
-  //Décryptage de l'ID de la conversation
-  let conversationId = "";
-  try {
-  const encryptedConversationId = req.params.conversationId;
-  conversationId = cryptoIDMessage.decryptConversationId(encryptedConversationId);
-
-  } catch (error) {
+  })
+  messagequeries.getMessageByIDconv(conversationId, userID).then((result) => {
+    if (result) {
+      for (let i = 0; i < result.length; i++) {
+        delete result[i].id;
+        delete result[i].conversation_id;
+        delete result[i].user_id;
+        result[i].ID_conversation = result[i].ID_conversation;
+      }
+      return res.status(200).json(result);
+    }
+  }).catch((error) => {
+    //console.log(error);
     return res.status(401).json({ error: "invalides" });
-  }
+  })
+    // Parcourir tous les messages
+        //conversationqueries.getMessageByIDconv(conversationId).then((result) => {
+        //  const encryptedMessages = result;
+        //  // Parcourir tous les messages
+        //  const decryptedMessages = encryptedMessages.map((encryptedMessage) => {
+        //    const decryptedContent = cryptoIDMessage.decryptMessage(encryptedMessage.Content, encryptedMessage.iv);
+        //    return {
+        //      Content: decryptedContent,
+        //      Creation_date: encryptedMessage.Creation_date,
+        //      Sender: encryptedMessage.Sender
+        //    };
+        //  });
+        //  return res.status(200).json(decryptedMessages);
+        //  //return res.status(200).json(result);
+        //}).catch((error) => {
+        //  return res.status(401).json({ error: "invalides" });
+        //})
+      })
 
-  let  who = "";
-  if (req.user.UserType == "customer"){
-    who = "Client";
-  }
-  else if (req.user.UserType == "employee"){
-    who = "Employee";
-  }
+
+router.post("/sendmessage/:conversationId",/*authenticateToken,*/ async (req,res) => {
+  const userID = 1;// récupération de l'id req.user.ID_user
+  let conversationId = req.params.conversationId;
 
   const {message} = req.body;
   if (message == ""){
     return res.status(401).json({ error: "message vide" });
   }
-  const { encryptedMessage, iv } = cryptoIDMessage.encryptMessage(message);
 
-
-  let employeeID = "";
-
-  employeequeries.getEmployeeIDByUserID(userID).then((result) => {
+  conversationqueries.getConvByIDuser(userID).then((result) => {
     if (result) {
-      employeeID = result.ID_employee;
-    }
-    else {
-      employeeID = "";
-    }
-    conversationqueries.getConvByIDandIDuser(conversationId,userID,employeeID).then((result) => {
-      if (result) {
-        conversationqueries.insertMessage(encryptedMessage,who,conversationId,iv).then((result) => {
-          if (result){
-            return res.status(200).json({ ok: true });
-          }
-        }).catch((error) => {
-          
-          return res.status(401).json({ error: "invalides" });
-        })
-  
+      for (let i = 0; i < result.length; i++) {
+        delete result[i].user_id1;
+        delete result[i].user_id2;
+        result[i].ID_conversation = result[i].ID_conversation;
       }
-    }).catch((error) => {
-      return res.status(401).json({ error: "Conversation not found" });
-    })
+      //return res.status(200).json(result);
+    }
   }).catch((error) => {
-    console.error(error);
-    res(error);
+    console.log("error");
+    return res.status(401).json({ error: "invalides" });
+  })
+
+  messagequeries.createMessage(conversationId, userID, message).then((result) => {
+    if (result) {
+      return res.status(200).json({ ok: true });
+    }
+  }).catch((error) => {
+      console.log(error);
+      return res.status(401).json({ error: "invalides" });
   });
 
 
 });
 
-
+/*
 router.get("/getMyDoc/:conversationId", authenticateToken, customerAccess,async (req,res) => {
   //Récupération des messages pour une conversation donnée
   const userID = req.user.ID_user;
