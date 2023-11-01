@@ -18,7 +18,7 @@ export default function LoginPage () {
 
   const postLogin = async (event) => {
     event.preventDefault();
-    let response = await fetch(`${process.env.ROOTAPI}auth/login`, {
+    let response = await fetch(`${process.env.ROOTAPI}/auth/login`, {
       method: 'POST',
       body: JSON.stringify({
         email: email,

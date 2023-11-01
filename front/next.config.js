@@ -4,7 +4,7 @@ const nextConfig = {
     output: 'export',
     basePath: process.env.NODE_ENV == 'production' ? '/Y' : '',
     env: {
-        ROOTAPI: 'http://localhost:3000/'
+        ROOTAPI: 'http://localhost:3000'
     }
 }
 

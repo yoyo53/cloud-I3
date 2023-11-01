@@ -28,11 +28,12 @@ export default function RegisterPage () {
 
   const postRegister = async (event) => {
     event.preventDefault();
-    let response = await fetch(`${process.env.ROOTAPI}auth/register`, {
+    let response = await fetch(`${process.env.ROOTAPI}/auth/register`, {
       method: 'POST',
       body: JSON.stringify({
         email: email,
-        password: password
+        password: password,
+        username: username
       }),
       headers: {
         'Content-type': 'application/json',

@@ -4,7 +4,7 @@ async function redirectUnautorized(router) {
         router.push("/login");
     }
     else {
-        let response = await fetch(`${process.env.ROOTAPI}auth/verifyToken`, {
+        let response = await fetch(`${process.env.ROOTAPI}/auth/verifyToken`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
@@ -19,7 +19,7 @@ async function redirectUnautorized(router) {
 async function redirectLogedIn(router) {
     let token = window.localStorage.getItem("token");
     if (token != null) {
-        let response = await fetch(`${process.env.ROOTAPI}auth/verifyToken`, {
+        let response = await fetch(`${process.env.ROOTAPI}/auth/verifyToken`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
