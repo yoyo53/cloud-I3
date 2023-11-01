@@ -11,6 +11,7 @@ export default function LoginPage () {
   const router = useRouter();
 
   useEffect(() => {
+    redirectLogedIn(router);
     document.querySelector('body').classList.add('h-full', 'bg-white')
     document.querySelector('html').classList.add('h-full')
   });
