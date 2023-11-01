@@ -70,7 +70,7 @@ export default function ChatPage() {
   {/* Chat messages */}
   <div id="messages" className="flex flex-col space-y-4 p-3 overflow-y-auto overflow-x-hidden scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
   {/* Chat messages go here */}
-  {messageList.slice().reverse().map((message, index) => (
+  {messageList.map((message, index) => (
     <Message
       key={index}
       text={message.message_text}

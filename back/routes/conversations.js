@@ -9,6 +9,7 @@ const messagequeries = require('../utils/queries/conversations/messagequeries')
 router.get("/getconversations", async (req,res) => {
   //Réccupération des conversations d'un utilisateur
   const userID = req.user_id
+  console.log(userID);
   
     conversationqueries.getConvByIDuser(userID).then((result) => {
       if (result) {
@@ -28,6 +29,7 @@ router.get("/getconversations", async (req,res) => {
 router.get("/getmessage/:conversationId", /*authenticateToken,*/ async (req,res) => {
   //Récupération des messages pour une conversation donnée
   const userID = req.user_id;
+  console.log(userID)
 
   let conversationId = req.params.conversationId;
   conversationqueries.getConvByIDuser(userID).then((result) => {
@@ -80,6 +82,7 @@ router.get("/getmessage/:conversationId", /*authenticateToken,*/ async (req,res)
 router.post("/sendmessage/:conversationId", async (req,res) => {
   const userID = req.user_id;
   let conversationId = req.params.conversationId;
+  console.log(userID)
 
   const {message} = req.body;
   if (message == ""){

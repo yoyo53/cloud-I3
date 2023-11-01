@@ -12,10 +12,14 @@ exports.getMessageByIDconv = function(convID, userID) {
           "u.username AS user_name " +
           "FROM messages m " +
           "LEFT JOIN users u ON m.user_id = u.id " +
-          "WHERE m.conversation_id = $2", [userID, convID], (error, results) => {
+          "WHERE m.conversation_id = $2 "+
+          "ORDER BY m.created_at ASC",
+          [userID, convID], (error, results) => {
             if (error) {
+              console.log(error);
               return reject(new Error("Message not found"));
             } else {
+              console.log("test");
               return resolve(results.rows);
             }
           }
