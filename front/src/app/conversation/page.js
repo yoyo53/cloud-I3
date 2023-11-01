@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useState, Fragment } from 'react';
 let token;
-
+import Newconv from './newconvcomposant';
 export function Conversations() {
   const [conversations, setConversations] = useState([]);
 
@@ -58,6 +58,8 @@ export function Conversations() {
         </li>
       ))}
     </ul>
+    <Newconv 
+    token={token}/>
   </div>
 </div>
 

@@ -26,3 +26,33 @@ exports.getConvByIDuser = function(userID) {
   });
 }
 
+exports.createConversation = function(userID, email) {
+  return new Promise((resolve, reject) => {
+    if (userID && email) {
+      pool.query(
+        "SELECT * FROM users WHERE email = $1", [email], (error, results) => {
+          if (error) {
+            return reject(new Error("Failed to create a conversation"));
+          } else {
+            if (results.rows.length > 0) {
+              pool.query(
+                "INSERT INTO conversations (user_id1, user_id2, title, created_at) " +
+                "VALUES ($1, $2, 'hello', NOW()) RETURNING *", [userID, results.rows[0].id], (error, results) => {
+                  if (error) {
+                    return reject(new Error("Failed to create a conversation"));
+                  } else {
+                    return resolve(results.rows[0]); // Retourne la conversation créée
+                  }
+                }
+              );
+            } else {
+              return reject(new Error("User not found"));
+            }
+          }
+        }
+      );
+    } else {
+      return reject(new Error("Missing userID or email"));
+    }
+  });
+}
