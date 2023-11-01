@@ -10,10 +10,7 @@ export default function ChatPage() {
   const id = new URLSearchParams(useSearchParams()).get("id");
   const [messageList, setMessageList] = useState([]);
   
-
-  useEffect(() => {
-    // Lorsque le composant est monté, effectuez la requête fetch.
-    token = window.localStorage.getItem("token");
+  function refreshChat(token) {
     fetch(`${process.env.ROOTAPI}/conversations/getmessage/${id}`,
     {
       method: 'GET',
@@ -31,6 +28,11 @@ export default function ChatPage() {
       .catch((error) => {
         console.error('Une erreur s\'est produite lors de la récupération des conversations:', error);
       });
+  }
+  useEffect(() => {
+    // Lorsque le composant est monté, effectuez la requête fetch.
+    token = window.localStorage.getItem("token");
+    refreshChat(token);
   }, []);
 
   return (
@@ -66,24 +68,26 @@ export default function ChatPage() {
     </div>
   </div>
   {/* Chat messages */}
-  <div id="messages" className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
-    {/* Chat messages go here */}
-    {messageList.map((message, index) => (
-          <Message
-            key={index}
-            text={message.message_text}
-            imageUrl="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
-            isCurrentUser={message.user_type === 'actual_user'}
-          />
-        ))}
-  </div>
+  <div id="messages" className="flex flex-col space-y-4 p-3 overflow-y-auto overflow-x-hidden scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch">
+  {/* Chat messages go here */}
+  {messageList.slice().reverse().map((message, index) => (
+    <Message
+      key={index}
+      text={message.message_text}
+      imageUrl="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
+      isCurrentUser={message.user_type === 'actual_user'}
+    />
+  ))}
+</div>
+
   {/* Message input */}
   
   <div className="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
     {/* Message input and send button */}
     <MessageInput 
     idconv={id}
-    token={token}/>
+    token={token}
+    refreshChat={refreshChat}/>
   </div>
 </div>
 

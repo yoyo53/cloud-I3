@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-function MessageInput({idconv, token}) {
+function MessageInput({idconv, token, refreshChat}) {
   const [message, setMessage] = useState('');
 
 
@@ -25,7 +25,8 @@ function MessageInput({idconv, token}) {
           }
         })
         .then((data) => {
-          console.log('Message envoyé avec succès :', data);
+            console.log('Message envoyé avec succès :', data);
+            refreshChat(token);
         })
         .catch((error) => {
           console.error('Erreur :', error);
