@@ -1,16 +1,27 @@
-'use client'
+"use client"
 import { useState, useEffect } from 'react';
 import Message from './messagecomposant';
 import MessageInput from './sendmessagecomposant';
 import { useSearchParams } from 'next/navigation'
- 
+
+let token;
+
 export default function ChatPage() {
   const id = new URLSearchParams(useSearchParams()).get("id");
   const [messageList, setMessageList] = useState([]);
+  
 
   useEffect(() => {
     // Lorsque le composant est monté, effectuez la requête fetch.
-    fetch(`${process.env.ROOTAPI}/conversations/getmessage/${id}`)
+    token = window.localStorage.getItem("token");
+    fetch(`${process.env.ROOTAPI}/conversations/getmessage/${id}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      })
       .then((response) => response.json())
       .then((data) => {
         // Stockez les données dans l'état du composant.
@@ -71,7 +82,8 @@ export default function ChatPage() {
   <div className="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
     {/* Message input and send button */}
     <MessageInput 
-    idconv={id}/>
+    idconv={id}
+    token={token}/>
   </div>
 </div>
 

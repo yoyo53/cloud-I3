@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-
-function MessageInput({idconv}) {
+function MessageInput({idconv, token}) {
   const [message, setMessage] = useState('');
+
 
   const handleChange = (e) => {
     setMessage(e.target.value);
@@ -14,6 +14,7 @@ function MessageInput({idconv}) {
         body: JSON.stringify(data),
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
       })
         .then((response) => {

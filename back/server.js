@@ -18,7 +18,7 @@ app.use(cors({
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 
-app.use('/conversations', convRouter)
+app.use('/conversations', securityMiddleware.verifyToken ,convRouter)
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)

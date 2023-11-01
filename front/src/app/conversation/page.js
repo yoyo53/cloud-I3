@@ -1,12 +1,20 @@
 "use client"
 import { useEffect, useState, Fragment } from 'react';
+let token;
 
 export function Conversations() {
   const [conversations, setConversations] = useState([]);
 
   useEffect(() => {
+    token = window.localStorage.getItem("token");
     // Utilisation de fetch pour récupérer les conversations depuis l'API
-    fetch(`${process.env.ROOTAPI}/conversations/getconversations`)
+    fetch(`${process.env.ROOTAPI}/conversations/getconversations`,
+    {
+      method: 'GET',
+      headers: {  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}` },
+    }
+      )
       .then((response) => response.json())
       .then((data) => {
         console.log('Réponse reçue:', data);

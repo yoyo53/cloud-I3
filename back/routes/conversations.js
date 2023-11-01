@@ -6,10 +6,10 @@ const conversationqueries = require('../utils/queries/conversations/conversation
 const messagequeries = require('../utils/queries/conversations/messagequeries')
 
 
-router.get("/getconversations",/*authenticateToken,*/ async (req,res) => {
-
+router.get("/getconversations", async (req,res) => {
+  console.log("getconversations");
   //Réccupération des conversations d'un utilisateur
-  const userID = 1;// récupération de l'id req.user.ID_user
+  const userID = req.user_id
   
     conversationqueries.getConvByIDuser(userID).then((result) => {
       if (result) {
