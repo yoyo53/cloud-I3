@@ -32,6 +32,15 @@ async function createUser(email, password, username) {
     catch {return null}
 }
 
+async function updateUser(id, username, about, phone, mess_notif, conv_notif, offer_notif, phone_notif) {
+    try {
+        const query = await pool.query('UPDATE users SET username = $1, about = $2, phone = $3, mess_notif = $4, conv_notif = $5, offer_notif = $6, phone_notif = $7 WHERE id = $8 RETURNING id',
+            [username, about, phone, mess_notif, conv_notif, offer_notif, phone_notif, id]);
+        return query.rows[0]?.id ?? null;        
+    }
+    catch {return null}
+}
+
 async function deleteUser(id) {
     try {
         await pool.query('DELETE FROM users WHERE id = $1', [id]);
@@ -45,5 +54,6 @@ module.exports = {
     getUserByEmail,
     getUserById,
     createUser,
+    updateUser,
     deleteUser
 }
