@@ -6,7 +6,7 @@ export default function Footer() {
   return (
 <footer className="bg-gray-200">
   <div
-    className="mx-auto max-w-screen-xl space-y-8 px-4 py-4 sm:px-6 lg:px-8"
+    className="mx-auto max-w-screen-xl space-y-4 px-4 py-4 sm:px-6 lg:px-8"
   >
     <div className="sm:flex sm:items-center sm:justify-between">
       <div className="text-teal-600">
@@ -139,7 +139,7 @@ export default function Footer() {
     </div>
 
     <div
-      className="grid grid-cols-1 gap-8 border-t border-gray-400 pt-8 sm:grid-cols-2 lg:grid-cols-4"
+      className="grid grid-cols-1 gap-8 border-t border-gray-400 pt-4 sm:grid-cols-2 lg:grid-cols-4"
     >
       <Link className="font-medium text-gray-900 m-auto" href="/">Home</Link>
       <Link className="font-medium text-gray-900 m-auto" href="/conversations">Conversations</Link>
