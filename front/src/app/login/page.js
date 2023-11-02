@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { redirectLogedIn } from '../../utils/security'
+import { redirectLogedIn } from '../../utils/security';
+import toast from "react-hot-toast";
 
 export default function LoginPage () {
   const [email, setEmail] = useState("");
@@ -31,10 +32,13 @@ export default function LoginPage () {
       window.localStorage.setItem("token", jsonResponse.token);
       router.push("/");
     }
+    else {
+      toast.error("Error: incorrect email or password");
+    }
   }
 
   const forgotPassword = () => {
-    alert("That's sad 😭")
+    toast("That's sad 😭");
   }
 
   return (
