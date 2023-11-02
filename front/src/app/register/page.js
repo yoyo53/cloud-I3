@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { redirectLogedIn } from '../../utils/security'
 
 export default function RegisterPage () {
   const [email, setEmail] = useState("");
@@ -10,6 +11,10 @@ export default function RegisterPage () {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [username, setUsername] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    redirectLogedIn(router);
+  }, []);
 
   useEffect(() => {
     const input = document.getElementById("confirmPassword");

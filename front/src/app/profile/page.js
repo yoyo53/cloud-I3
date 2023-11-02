@@ -28,12 +28,12 @@ export default function Profile() {
             let jsonResponse = await response.json();
             setEmail(jsonResponse.user.email);
             setUsername(jsonResponse.user.username);
-            setAbout(jsonResponse.user.about ?? "");
+            setAbout(jsonResponse.user.about);
             setPhone(jsonResponse.user.phone ?? "");
-            setMessNotif(jsonResponse.user.messNotif ?? false);
-            setConvNotif(jsonResponse.user.convNotif ?? false);
-            setOfferNotif(jsonResponse.user.offerNotif ?? true);
-            setPhoneNotif(jsonResponse.user.phoneNotif ?? 0);    
+            setMessNotif(jsonResponse.user.mess_notif);
+            setConvNotif(jsonResponse.user.conv_notif);
+            setOfferNotif(jsonResponse.user.offer_notif);
+            setPhoneNotif(jsonResponse.user.phone_notif);    
         }
      })()
   }, []);
@@ -47,10 +47,10 @@ export default function Profile() {
         username: username,
         about: about,
         phone: phone,
-        messNotif: messNotif,
-        convNotif: convNotif,
-        offerNotif: offerNotif,
-        phoneNotif: phone ? phoneNotif : 0 
+        mess_notif: messNotif,
+        conv_notif: convNotif,
+        offer_notif: offerNotif,
+        phone_notif: phone ? phoneNotif : 0 
       }),
       headers: {
         'Content-type': 'application/json',
@@ -71,6 +71,7 @@ export default function Profile() {
       },
     })
     if (response.ok) {
+      window.localStorage.removeItem("token");
       router.push("/");
     }
   };

@@ -11,6 +11,7 @@ export default function Example () {
   const path = usePathname();
 
   useEffect(() => {
+    setMobileMenuOpen(false);
     (async () => {
       const token = window.localStorage.getItem('token');
       let response = await fetch(`${process.env.ROOTAPI}/auth/verifyToken`, {
