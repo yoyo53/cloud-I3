@@ -111,4 +111,26 @@ router.post("/newconversation", async (req,res) => {
       return res.status(401).json({ error: error });
   });
 });
+
+
+router.get("/getconversation/:conversationId", async (req,res) => {
+  const userID = req.user_id;
+  let conversationId = req.params.conversationId;
+
+  conversationqueries.getConvByIDuser(userID).then((result) => {
+    if (result) {
+      for (let i = 0; i < result.length; i++) {
+        if (result[i].id == conversationId){
+          delete result[i].user_id1;
+          delete result[i].user_id2;
+          return res.status(200).json(result[i]);
+        }
+      }
+      return res.status(401).json({ error: "not auto" });
+    }
+  }).catch((error) => {
+    console.log("error");
+    return res.status(401).json({ error: "invalides" });
+  })
+});
 module.exports = router

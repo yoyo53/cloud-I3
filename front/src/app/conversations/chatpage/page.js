@@ -9,6 +9,7 @@ let token;
 export default function ChatPage() {
   const id = new URLSearchParams(useSearchParams()).get("id");
   const [messageList, setMessageList] = useState([]);
+  const [convinfos, setConvinfos] = useState([{}]);
   
   function getRandomProfilePicture(username) {
     const hash = username.split('').reduce((acc, char) => {
@@ -39,10 +40,42 @@ export default function ChatPage() {
   }
   useEffect(() => {
     document.querySelector('body').classList.add('max-h-screen');
+
+    //fetch sur /getconversation/:conversationId pour récupérer les information de la conversation
+    fetch(`${process.env.ROOTAPI}/conversations/getconversation/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      // Stockez les données dans l'état du composant.
+      console.log('Réponse reçue:', data);
+      let name = data.other_username;
+      let creationdate = data.created_at.split("T")[0];
+      setConvinfos({name, creationdate});
+    })
+    .catch((error) => {
+      console.error('Une erreur s\'est produite lors de la récupération des informations de la conversation:', error);
+    });
+
     // Lorsque le composant est monté, effectuez la requête fetch.
     token = window.localStorage.getItem("token");
     refreshChat(token);
   }, []);
+
+  useEffect(() => {
+    // Rafraîchir la liste des chats toutes les 5 secondes
+    const intervalId = setInterval(() => {
+      refreshChat(token);
+    }, 5000);
+
+    // Nettoyer l'intervalle lorsque le composant est démonté
+    return () => clearInterval(intervalId);
+  }, []);
+
 
   return (
     
@@ -59,17 +92,17 @@ export default function ChatPage() {
           </svg>
         </span>
         <img
-          src="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
-          alt=""
+            src={getRandomProfilePicture(convinfos.name ||"")}
+            alt="Profile Picture"
           className="w-10 sm:w-16 h-10 sm:h-16 rounded-full"
         />
       </div>
       {/* User details */}
       <div className="flex flex-col leading-tight">
         <div className="text-2xl mt-1 flex items-center">
-          <span className="text-gray-700 mr-3">Anderson Vanhron</span>
+            <span className="text-gray-700 mr-3">{convinfos.name}</span>
         </div>
-        <span className="text-lg text-gray-600">Junior Developer</span>
+        <span className="text-sm text-gray-400">Created at {convinfos.creationdate}</span>
       </div>
     </div>
     {/* Action buttons */}

@@ -13,10 +13,7 @@ export function Conversations() {
     return `https://picsum.photos/seed/${hash}/200`;
   }
 
-
-  useEffect(() => {
-    token = window.localStorage.getItem("token");
-    // Utilisation de fetch pour récupérer les conversations depuis l'API
+  function refreshConversations(token) {
     fetch(`${process.env.ROOTAPI}/conversations/getconversations`,
     {
       method: 'GET',
@@ -27,18 +24,32 @@ export function Conversations() {
       .then((response) => response.json())
       .then((data) => {
         console.log('Réponse reçue:', data);
-        setConversations(data);
+        
+        let dataedit = data.map((conversation) => {
+          let other_username = conversation.other_username;
+          let creationdate = conversation.created_at.split("T")[0];
+          let id = conversation.id;
+          return {other_username, creationdate, id};
+        })
+        setConversations(dataedit);
       })
       .catch((error) => {
         console.error('Une erreur s\'est produite lors de la récupération des conversations:', error);
       });
+    }
+
+  useEffect(() => {
+    token = window.localStorage.getItem("token");
+    // Utilisation de fetch pour récupérer les conversations depuis l'API
+    refreshConversations(token)
   }, []);
 
   return (
 <div className="h-screen">
   <div className="m-10 rounded-lg overflow-hidden">
   <Newconv 
-    token={token}/>
+    token={token}
+    refreshConversations = {refreshConversations(token)}/>
     <ul className="bg-gray-100 shadow-md divide-y divide-gray-200 mt-4 rounded-lg">
       {conversations.map((conversation) => (
         <li key={conversation.id} className="p-8 hover:bg-gray-50">
@@ -50,7 +61,7 @@ export function Conversations() {
                 </div>
                 <div>
                   <p className="text-xl font-semibold">{conversation.other_username}</p>
-                  <p className="text-gray-500">Conversation ID: {conversation.id}</p>
+                  <p className="text-gray-500">Created at: {conversation.creationdate}</p>
                 </div>
               </div>
               <div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function Newconv({token}) {
+function Newconv({token, refreshConversations}) {
     const [email, setEmail] = useState("");
 
     const handleSubmit = () => {
@@ -17,6 +17,7 @@ function Newconv({token}) {
                 console.log(response)
               if (response.ok) {
                 return response.json();
+                refreshConversations(token);
               } else {
                 throw new Error('Erreur lors de la requête.');
               }
