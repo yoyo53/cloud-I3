@@ -5,6 +5,9 @@ const nextConfig = {
     basePath: process.env.NODE_ENV == 'production' ? '/Y' : '',
     env: {
         ROOTAPI: 'http://localhost:3000'
+    },
+    images: {
+        unoptimized: true
     }
 }
 

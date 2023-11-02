@@ -1,17 +1,6 @@
-'use client';
+'use client'
 
-const people = [
-  {
-    name: 'Hugo Parmentier',
-    role: 'Co-Founder / CEO',
-    imageUrl: './hugo.jpg'
-  },
-  {
-    name: 'Yohan Villiers',
-    role: 'Co-Founder / CEO',
-    imageUrl: './yohan.jpg'
-  }
-]
+import Image from 'next/image'
 
 export default function About () {
   return (
@@ -23,7 +12,7 @@ export default function About () {
         <p className='text-lg leading-8 text-gray-600 text-justify max-w-3xl'>
           Welcome to Y, where we believe in keeping things real and
           conversations unreal. Unlike some other platforms that may have
-          undergone interstellar transformations (ahem, X), we're here to
+          undergone interstellar transformations (ahem, X), we&apos;re here to
           provide you with a genuine, down-to-earth chat experience. No rocket
           science, just good old-fashioned banter. Join us on Y, where the only
           thing taking off is our sense of humor. #NotX #JustY
@@ -37,25 +26,40 @@ export default function About () {
           role='list'
           className='grid gap-x-6 gap-y-12 md:grid-cols-2 sm:gap-y-16 xl:col-span-2'
         >
-          {people.map(person => (
-            <li key={person.name}>
-              <div className='flex justify-center items-center gap-x-6'>
-                <img
-                  className='h-32 w-32 rounded-full'
-                  src={person.imageUrl}
-                  alt=''
-                />
-                <div>
-                  <h3 className='text-2xl font-semibold leading-7 tracking-tight text-gray-900'>
-                    {person.name}
-                  </h3>
-                  <p className='text-lg font-semibold leading-6 text-indigo-600'>
-                    {person.role}
-                  </p>
-                </div>
+          <li key='Hugo Parmentier'>
+            <div className='flex justify-center items-center gap-x-6'>
+              <Image
+                className='h-32 w-32 rounded-full'
+                src='./hugo.jpg'
+                alt=''
+              />
+              <div>
+                <h3 className='text-2xl font-semibold leading-7 tracking-tight text-gray-900'>
+                  Hugo Parmentier
+                </h3>
+                <p className='text-lg font-semibold leading-6 text-indigo-600'>
+                  Co-Founder / CEO
+                </p>
               </div>
-            </li>
-          ))}
+            </div>
+          </li>
+          <li key='Yohan Villiers'>
+            <div className='flex justify-center items-center gap-x-6'>
+              <Image
+                className='h-32 w-32 rounded-full'
+                src='./yohan.jpg'
+                alt=''
+              />
+              <div>
+                <h3 className='text-2xl font-semibold leading-7 tracking-tight text-gray-900'>
+                  Yohan Villiers
+                </h3>
+                <p className='text-lg font-semibold leading-6 text-indigo-600'>
+                  Co-Founder / CEO
+                </p>
+              </div>
+            </div>
+          </li>
         </ul>
       </div>
     </div>

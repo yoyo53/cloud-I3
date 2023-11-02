@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -10,7 +11,7 @@ export default function Footer() {
   >
     <div className="sm:flex sm:items-center sm:justify-between">
       <div className="text-teal-600">
-        <img
+        <Image
           className='mx-auto h-8 w-auto'
           src='./logo.svg'
           alt='Y logo'
