@@ -51,7 +51,7 @@ export function Conversations() {
     token={token}
     refreshConversations = {refreshConversations(token)}/>
     <ul className="bg-gray-100 shadow-md divide-y divide-gray-200 mt-4 rounded-lg">
-      {conversations.map((conversation) => (
+      {conversations && conversations.map((conversation) => (
         <li key={conversation.id} className="p-8 hover:bg-gray-50">
           <a href={`/conversations/chatpage?id=${conversation.id}`} className="block cursor-pointer">
             <div className="flex justify-between items-center">
