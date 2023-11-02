@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { redirectUnautorized } from '../../utils/security'
+import { redirectUnautorized } from '../../utils/security';
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Profile() {
     const [email, setEmail] = useState("");
@@ -58,7 +59,10 @@ export default function Profile() {
       },
     })
     if (response.ok) {
-      router.back();
+      toast.success("Modifications saved");
+    }
+    else {
+      toast.error("Error: failed to update profile");
     }
   };
 
@@ -71,8 +75,12 @@ export default function Profile() {
       },
     })
     if (response.ok) {
+      toast.success("Account deleted successfully");
       window.localStorage.removeItem("token");
       router.push("/");
+    }
+    else {
+      toast.error("Error: account deletion failed");
     }
   };
 

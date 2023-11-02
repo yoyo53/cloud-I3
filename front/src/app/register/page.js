@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { redirectLogedIn } from '../../utils/security'
+import { redirectLogedIn } from '../../utils/security';
+import toast from "react-hot-toast";
 
 export default function RegisterPage () {
   const [email, setEmail] = useState("");
@@ -39,7 +40,11 @@ export default function RegisterPage () {
       },
     })
     if (response.ok) {
-        router.push("/login");
+      toast.success("Account created successfully");
+      router.push("/login");
+    }
+    else {
+      toast.error("Error: email address already taken");
     }
   }
 
