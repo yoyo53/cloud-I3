@@ -24,15 +24,17 @@ export default function Profile() {
                 'Authorization': `Bearer ${token}`
             },
         });
-        let jsonResponse = await response.json();
-        setEmail(jsonResponse.user.email);
-        setUsername(jsonResponse.user.username);
-        setAbout(jsonResponse.user.about ?? "");
-        setPhone(jsonResponse.user.phone ?? "");
-        setMessNotif(jsonResponse.user.messNotif ?? false);
-        setConvNotif(jsonResponse.user.convNotif ?? false);
-        setOfferNotif(jsonResponse.user.offerNotif ?? true);
-        setPhoneNotif(jsonResponse.user.phoneNotif ?? 0);
+        if (response.ok) {
+            let jsonResponse = await response.json();
+            setEmail(jsonResponse.user.email);
+            setUsername(jsonResponse.user.username);
+            setAbout(jsonResponse.user.about ?? "");
+            setPhone(jsonResponse.user.phone ?? "");
+            setMessNotif(jsonResponse.user.messNotif ?? false);
+            setConvNotif(jsonResponse.user.convNotif ?? false);
+            setOfferNotif(jsonResponse.user.offerNotif ?? true);
+            setPhoneNotif(jsonResponse.user.phoneNotif ?? 0);    
+        }
      })()
   }, []);
 
