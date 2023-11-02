@@ -31,7 +31,7 @@ export function Conversations() {
     <ul className="bg-white shadow-md p-4 divide-y divide-gray-200">
       {conversations.map((conversation) => (
         <li key={conversation.id} className="p-4">
-          <a href={`/conversation/${conversation.id}`} className="block cursor-pointer">
+          <a href={`/conversations/chatpage?id=${conversation.id}`} className="block cursor-pointer">
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-4">
                 <div className="w-12 h-12 rounded-full bg-gray-200"></div>
