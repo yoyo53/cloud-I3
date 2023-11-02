@@ -19,7 +19,6 @@ exports.getMessageByIDconv = function(convID, userID) {
               console.log(error);
               return reject(new Error("Message not found"));
             } else {
-              console.log("test");
               return resolve(results.rows);
             }
           }

@@ -10,6 +10,14 @@ export default function ChatPage() {
   const id = new URLSearchParams(useSearchParams()).get("id");
   const [messageList, setMessageList] = useState([]);
   
+  function getRandomProfilePicture(username) {
+    const hash = username.split('').reduce((acc, char) => {
+      acc = ((acc << 5) - acc) + char.charCodeAt(0);
+      return acc & acc;
+    }, 0);
+    return `https://picsum.photos/seed/${hash}/200`;
+  }
+
   function refreshChat(token) {
     fetch(`${process.env.ROOTAPI}/conversations/getmessage/${id}`,
     {
@@ -76,7 +84,7 @@ export default function ChatPage() {
     <Message
       key={index}
       text={message.message_text}
-      imageUrl="https://images.unsplash.com/photo-1549078642-b2ba4bda0cdb?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=facearea&amp;facepad=3&amp;w=144&amp;h=144"
+      imageUrl={getRandomProfilePicture(message.user_name)}
       isCurrentUser={message.user_type === 'actual_user'}
     />
   ))}
