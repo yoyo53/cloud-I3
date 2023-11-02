@@ -30,6 +30,7 @@ export default function ChatPage() {
       });
   }
   useEffect(() => {
+    document.querySelector('body').classList.add('max-h-screen');
     // Lorsque le composant est monté, effectuez la requête fetch.
     token = window.localStorage.getItem("token");
     refreshChat(token);
