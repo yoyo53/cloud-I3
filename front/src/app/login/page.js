@@ -27,6 +27,7 @@ export default function LoginPage () {
       },
     })
     if (response.ok) {
+      let jsonResponse = await response.json();
       window.localStorage.setItem("token", jsonResponse.token);
       router.push("/");
     }
