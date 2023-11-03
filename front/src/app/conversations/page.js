@@ -5,6 +5,7 @@ let token;
 import Newconv from '../../components/NewConv';
 import toast from "react-hot-toast";
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { redirectUnautorized } from '../../utils/security';
 
 export function Conversations() {
