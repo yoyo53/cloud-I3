@@ -3,7 +3,7 @@ const nextConfig = {
     reactStrictMode: true,
     output: 'export',
     basePath: process.env.NODE_ENV == 'production' ? '/Y' : '',
-    assetPrefix: process.env.NODE_ENV === "production" ? "/Y" : '',
+    assetPrefix: process.env.NODE_ENV === "production" ? '/Y' : '',
     env: {
         ROOTAPI: 'https://y-back.fly.dev'
     },

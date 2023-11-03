@@ -41,7 +41,7 @@ export default function Example () {
         <div className='flex lg:flex-1'>
           <Link href='/' className='-m-1.5 p-1.5'>
             <span className='sr-only'>Y logo</span>
-            <img className='h-8 w-auto' src='/logo.svg' alt='Y logo' />
+            <img className='h-8 w-auto' src='./logo.svg' alt='Y logo' />
           </Link>
         </div>
         <div className='flex lg:hidden'>
@@ -53,7 +53,7 @@ export default function Example () {
             <span className='sr-only'>Open main menu</span>
             <img
               className='h-6 w-auto'
-              src='/bars-icon.svg'
+              src='./bars-icon.svg'
               alt='open main menu'
             />
           </button>
@@ -98,7 +98,7 @@ export default function Example () {
                 >
                   <img
                     className='h-4 w-auto'
-                    src='/settings-icon.svg'
+                    src='./settings-icon.svg'
                     alt='open main menu'
                   />
                   Settings
@@ -133,7 +133,7 @@ export default function Example () {
           <div className='flex items-center justify-between'>
             <Link href='/' className='-m-1.5 p-1.5'>
               <span className='sr-only'>Y logo</span>
-              <img className='h-8 w-auto' src='/logo.svg' alt='Y logo' />
+              <img className='h-8 w-auto' src='./logo.svg' alt='Y logo' />
             </Link>
             <button
               type='button'
@@ -143,7 +143,7 @@ export default function Example () {
               <span className='sr-only'>Close menu</span>
               <img
                 className='h-6 w-auto'
-                src='/xmark-icon.svg'
+                src='./xmark-icon.svg'
                 alt='close menu'
               />
             </button>

@@ -12,7 +12,7 @@ export default function Footer() {
       <div className="text-teal-600">
         <img
           className='mx-auto h-8 w-auto'
-          src='/logo.svg'
+          src='./logo.svg'
           alt='Y logo'
         />
       </div>
