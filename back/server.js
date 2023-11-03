@@ -10,7 +10,7 @@ const port = process.env.PORT ?? 3000
 
 app.use(cors({
   "origin": "*",
-  "methods": "GET,PATCH,POST,PUT,DELETE,OPTIONS",
+  "methods": "GET,POST,PUT,DELETE,OPTIONS",
   "allowedHeaders": "X-Requested-With,Content-Type,Authorization"
 }))
 
