@@ -15,10 +15,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="shortcut icon" href="./favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png"/>
-        <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png"/>
+        <link rel="shortcut icon" href={`${process.env.BASE_PATH}/favicon.ico`} />
+        <link rel="apple-touch-icon" sizes="180x180" href={`${process.env.BASE_PATH}/apple-touch-icon.png`} />
+        <link rel="icon" type="image/png" sizes="32x32" href={`${process.env.BASE_PATH}/favicon-32x32.png`} />
+        <link rel="icon" type="image/png" sizes="16x16" href={`${process.env.BASE_PATH}/favicon-16x16.png`} />
       </head>
       <body className={'flex flex-col min-h-screen bg-white ' + inter.className}>
         <Toaster />

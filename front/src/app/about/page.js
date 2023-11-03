@@ -28,7 +28,7 @@ export default function About () {
             <div className='flex justify-center items-center gap-x-6'>
               <img
                 className='h-32 w-32 rounded-full'
-                src='./hugo.jpg'
+                src={`${process.env.BASE_PATH}/hugo.jpg`}
                 alt=''
               />
               <div>
@@ -45,7 +45,7 @@ export default function About () {
             <div className='flex justify-center items-center gap-x-6'>
               <img
                 className='h-32 w-32 rounded-full'
-                src='./yohan.jpg'
+                src={`${process.env.BASE_PATH}/yohan.jpg`}
                 alt=''
               />
               <div>
