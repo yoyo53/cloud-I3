@@ -1,4 +1,8 @@
+"use client";
+
 import React, { useState } from 'react';
+import toast from "react-hot-toast";
+
 function MessageInput({idconv, token, refreshChat}) {
   const [message, setMessage] = useState('');
 
@@ -7,7 +11,8 @@ function MessageInput({idconv, token, refreshChat}) {
     setMessage(e.target.value);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
     const data = { message: message };
     fetch(`${process.env.ROOTAPI}/conversations/sendmessage/${idconv}`, {
         method: 'POST',
@@ -29,6 +34,7 @@ function MessageInput({idconv, token, refreshChat}) {
             refreshChat(token);
         })
         .catch((error) => {
+          toast.error("Error: failed to send message");
           console.error('Erreur :', error);
         });
     console.log(`Message envoyé : ${message}`);
@@ -36,6 +42,7 @@ function MessageInput({idconv, token, refreshChat}) {
   };
 
   return (
+    <form method="POST" onSubmit={handleSubmit}>
     <ul className="flex items-center justify-between w-full">
       <li className="flex-1 relative">
         <input
@@ -48,9 +55,8 @@ function MessageInput({idconv, token, refreshChat}) {
       </li>
       <li className="ml-2">
         <button
-          type="button"
+          type="submit"
           className="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-600 hover:bg-blue-400 focus:outline-none"
-          onClick={handleSubmit}
         >
           <span className="font-bold">Send</span>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6 ml-2 transform rotate-90">
@@ -59,6 +65,7 @@ function MessageInput({idconv, token, refreshChat}) {
         </button>
       </li>
     </ul>
+    </form>
   );
 }
 

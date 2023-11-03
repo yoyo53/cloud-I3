@@ -1,8 +1,12 @@
-"use client"
+"use client";
+
 import { useState, useEffect } from 'react';
-import Message from './messagecomposant';
-import MessageInput from './sendmessagecomposant';
+import Message from '../../../components/Message';
+import MessageInput from '../../../components/SendMessage';
 import { useSearchParams } from 'next/navigation'
+import toast from "react-hot-toast";
+import { useRouter } from 'next/navigation';
+import { redirectUnautorized } from '../../../utils/security';
 
 let token;
 
@@ -10,7 +14,8 @@ export default function ChatPage() {
   const id = new URLSearchParams(useSearchParams()).get("id");
   const [messageList, setMessageList] = useState([]);
   const [convinfos, setConvinfos] = useState([{}]);
-  
+  const router = useRouter();
+
   function getRandomProfilePicture(username) {
     const hash = username.split('').reduce((acc, char) => {
       acc = ((acc << 5) - acc) + char.charCodeAt(0);
@@ -32,14 +37,20 @@ export default function ChatPage() {
       .then((data) => {
         // Stockez les données dans l'état du composant.
         console.log('Réponse reçue:', data);
-        setMessageList(data);
+        if (!data.error) {
+          setMessageList(data);
+        }
       })
       .catch((error) => {
-        console.error('Une erreur s\'est produite lors de la récupération des conversations:', error);
+        toast.error("Error: failed to retrieve messages");
+        console.error('Une erreur s\'est produite lors de la récupération des messages:', error);
       });
   }
   useEffect(() => {
     document.querySelector('body').classList.add('max-h-screen');
+
+    // Lorsque le composant est monté, effectuez la requête fetch.
+    token = window.localStorage.getItem("token");
 
     //fetch sur /getconversation/:conversationId pour récupérer les information de la conversation
     fetch(`${process.env.ROOTAPI}/conversations/getconversation/${id}`, {
@@ -58,15 +69,15 @@ export default function ChatPage() {
       setConvinfos({name, creationdate});
     })
     .catch((error) => {
+      toast.error("Error: failed to retrieve conversation data");
       console.error('Une erreur s\'est produite lors de la récupération des informations de la conversation:', error);
     });
 
-    // Lorsque le composant est monté, effectuez la requête fetch.
-    token = window.localStorage.getItem("token");
     refreshChat(token);
   }, []);
 
   useEffect(() => {
+    redirectUnautorized(router, toast);
     // Rafraîchir la liste des chats toutes les 5 secondes
     const intervalId = setInterval(() => {
       refreshChat(token);
@@ -75,7 +86,6 @@ export default function ChatPage() {
     // Nettoyer l'intervalle lorsque le composant est démonté
     return () => clearInterval(intervalId);
   }, []);
-
 
   return (
     
@@ -102,7 +112,7 @@ export default function ChatPage() {
         <div className="text-2xl mt-1 flex items-center">
             <span className="text-gray-700 mr-3">{convinfos.name}</span>
         </div>
-        <span className="text-sm text-gray-400">Created at {convinfos.creationdate}</span>
+        <span className="text-sm text-gray-400">Created on {convinfos.creationdate}</span>
       </div>
     </div>
     {/* Action buttons */}

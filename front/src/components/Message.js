@@ -1,3 +1,5 @@
+"use client";
+
 export default function Message({ text, imageUrl, isCurrentUser }) {
   const messageClass = isCurrentUser
   ? "chat-message flex items-end justify-end "

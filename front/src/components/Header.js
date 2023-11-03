@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from "next/image";
 import { useState, useEffect } from 'react'
 import { Dialog } from '@headlessui/react'
 import { usePathname } from 'next/navigation'
@@ -9,24 +8,28 @@ import { usePathname } from 'next/navigation'
 export default function Example () {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [connected, setConnected] = useState(null)
-  const path = usePathname();
+  const path = usePathname()
 
   useEffect(() => {
     setMobileMenuOpen(false);
     (async () => {
-      const token = window.localStorage.getItem('token');
-      let response = await fetch(`${process.env.ROOTAPI}/auth/verifyToken`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      })
-      setConnected(response.ok);
+      const token = window.localStorage.getItem('token')
+      try {
+        let response = await fetch(`${process.env.ROOTAPI}/auth/verifyToken`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        })
+        setConnected(response.ok)
+      } catch {
+        setConnected(false)
+      }
     })()
   }, [path])
 
   const logout = () => {
-    window.localStorage.removeItem('token');
-    setConnected(false);
+    window.localStorage.removeItem('token')
+    setConnected(false)
   }
 
   return (
@@ -38,7 +41,7 @@ export default function Example () {
         <div className='flex lg:flex-1'>
           <Link href='/' className='-m-1.5 p-1.5'>
             <span className='sr-only'>Y logo</span>
-            <Image className='h-8 w-auto' src='./logo.svg' alt='Y logo' />
+            <img className='h-8 w-auto' src='/logo.svg' alt='Y logo' />
           </Link>
         </div>
         <div className='flex lg:hidden'>
@@ -48,9 +51,9 @@ export default function Example () {
             onClick={() => setMobileMenuOpen(true)}
           >
             <span className='sr-only'>Open main menu</span>
-            <Image
+            <img
               className='h-6 w-auto'
-              src='./bars-icon.svg'
+              src='/bars-icon.svg'
               alt='open main menu'
             />
           </button>
@@ -93,9 +96,9 @@ export default function Example () {
                   href='/profile'
                   className='flex items-center gap-x-1 rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600'
                 >
-                  <Image
+                  <img
                     className='h-4 w-auto'
-                    src='./settings-icon.svg'
+                    src='/settings-icon.svg'
                     alt='open main menu'
                   />
                   Settings
@@ -130,7 +133,7 @@ export default function Example () {
           <div className='flex items-center justify-between'>
             <Link href='/' className='-m-1.5 p-1.5'>
               <span className='sr-only'>Y logo</span>
-              <Image className='h-8 w-auto' src='./logo.svg' alt='Y logo' />
+              <img className='h-8 w-auto' src='/logo.svg' alt='Y logo' />
             </Link>
             <button
               type='button'
@@ -138,9 +141,9 @@ export default function Example () {
               onClick={() => setMobileMenuOpen(false)}
             >
               <span className='sr-only'>Close menu</span>
-              <Image
+              <img
                 className='h-6 w-auto'
-                src='./xmark-icon.svg'
+                src='/xmark-icon.svg'
                 alt='close menu'
               />
             </button>

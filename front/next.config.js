@@ -2,7 +2,7 @@
 const nextConfig = {
     reactStrictMode: true,
     output: 'export',
-    basePath: process.env.NODE_ENV == 'production' ? '/Y' : '',
+    basePath: process.env.NODE_ENV == 'production' ? '' : '',
     env: {
         ROOTAPI: 'http://localhost:3000'
     },

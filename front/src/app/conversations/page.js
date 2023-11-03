@@ -1,10 +1,16 @@
-"use client"
-import { useEffect, useState, Fragment } from 'react';
+"use client";
+
+import { useEffect, useState } from 'react';
 let token;
-import Newconv from './newconvcomposant';
+import Newconv from '../../components/NewConv';
+import toast from "react-hot-toast";
+import { useRouter } from 'next/navigation';
+import { redirectUnautorized } from '../../utils/security';
+
 export function Conversations() {
   const [conversations, setConversations] = useState([]);
-  
+  const router = useRouter();
+
   function getRandomProfilePicture(username) {
     const hash = username.split('').reduce((acc, char) => {
       acc = ((acc << 5) - acc) + char.charCodeAt(0);
@@ -24,21 +30,24 @@ export function Conversations() {
       .then((response) => response.json())
       .then((data) => {
         console.log('Réponse reçue:', data);
-        
-        let dataedit = data.map((conversation) => {
-          let other_username = conversation.other_username;
-          let creationdate = conversation.created_at.split("T")[0];
-          let id = conversation.id;
-          return {other_username, creationdate, id};
-        })
-        setConversations(dataedit);
+        if (!data.error) {
+          let dataedit = data.map((conversation) => {
+            let other_username = conversation.other_username;
+            let creationdate = conversation.created_at.split("T")[0];
+            let id = conversation.id;
+            return {other_username, creationdate, id};
+          })
+          setConversations(dataedit);  
+        }
       })
       .catch((error) => {
+        toast.error("Error: failed to retrieve conversations");
         console.error('Une erreur s\'est produite lors de la récupération des conversations:', error);
       });
     }
 
   useEffect(() => {
+    redirectUnautorized(router, toast);
     token = window.localStorage.getItem("token");
     // Utilisation de fetch pour récupérer les conversations depuis l'API
     refreshConversations(token)
@@ -49,7 +58,7 @@ export function Conversations() {
   <div className="m-10 rounded-lg overflow-hidden">
   <Newconv 
     token={token}
-    refreshConversations = {refreshConversations(token)}/>
+    refreshConversations = {() => {refreshConversations(token)}}/>
     <ul className="bg-gray-100 shadow-md divide-y divide-gray-200 mt-4 rounded-lg">
       {conversations && conversations.map((conversation) => (
         <li key={conversation.id} className="p-8 hover:bg-gray-50">
@@ -61,21 +70,8 @@ export function Conversations() {
                 </div>
                 <div>
                   <p className="text-xl font-semibold">{conversation.other_username}</p>
-                  <p className="text-gray-500">Created at: {conversation.creationdate}</p>
+                  <p className="text-gray-500 text-sm sm:text-base">Created on {conversation.creationdate}</p>
                 </div>
-              </div>
-              <div>
-                <p className="text-gray-500">ID: {conversation.id}</p>
-                {true ? (
-                  <p className="text-gray-500">
-                    Last seen <time dateTime="1">1</time>
-                  </p>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                    <p className="text-green-500 font-semibold">Online</p>
-                  </div>
-                )}
               </div>
             </div>
           </a>

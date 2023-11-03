@@ -1,9 +1,7 @@
 const express = require('express')
 const router = express.Router()
-//const crypto = require('crypto')
-//const fs = require('fs')
-const conversationqueries = require('../utils/queries/conversations/conversationqueries')
-const messagequeries = require('../utils/queries/conversations/messagequeries')
+const conversationqueries = require('../utils/queries/conversation.queries')
+const messagequeries = require('../utils/queries/message.queries')
 
 
 router.get("/getconversations", async (req,res) => {

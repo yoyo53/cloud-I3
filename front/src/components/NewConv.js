@@ -1,9 +1,13 @@
+"use client";
+
 import React, { useState } from 'react';
+import toast from "react-hot-toast";
 
 function Newconv({token, refreshConversations}) {
     const [email, setEmail] = useState("");
 
-    const handleSubmit = () => {
+    const handleSubmit = (event) => {
+        event.preventDefault();
         const data = { email: email };
         fetch(`${process.env.ROOTAPI}/conversations/newconversation`, {
             method: 'POST',
@@ -16,8 +20,8 @@ function Newconv({token, refreshConversations}) {
             .then((response) => {
                 console.log(response)
               if (response.ok) {
-                return response.json();
                 refreshConversations(token);
+                return response.json();
               } else {
                 throw new Error('Erreur lors de la requête.');
               }
@@ -25,13 +29,14 @@ function Newconv({token, refreshConversations}) {
             .then((data) => {
             })
             .catch((error) => {
+              toast.error("Error: invalid email");
               console.error('Erreur :', error);
             });
             setEmail(''); // Réinitialisez le champ de message après l'envoi.
       };
 
   return (
-    <div>
+    <form method="POST" onSubmit={handleSubmit}>
   <label
     htmlFor="email"
     className="block text-sm font-medium leading-6 text-gray-900"
@@ -47,13 +52,12 @@ function Newconv({token, refreshConversations}) {
       value={email}
       onChange={(e) => setEmail(e.target.value)}
       required
-      className="flex-grow rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+      className="w-10 flex-grow rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
       placeholder="email"
     />
     <button
-      type="button"
+      type="submit"
       className="ml-2 inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-600 hover:bg-blue-400 focus:outline-none"
-        onClick={handleSubmit}
     >
       <span className="font-bold">New</span>
       <svg
@@ -66,7 +70,7 @@ function Newconv({token, refreshConversations}) {
       </svg>
     </button>
   </div>
-</div>
+</form>
 
   );
 }

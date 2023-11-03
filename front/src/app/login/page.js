@@ -1,56 +1,54 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import Image from "next/image";
-import { useRouter } from 'next/navigation';
-import { redirectLogedIn } from '../../utils/security';
-import toast from "react-hot-toast";
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { redirectLogedIn } from '../../utils/security'
+import toast from 'react-hot-toast'
 
 export default function LoginPage () {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter();
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const router = useRouter()
 
   useEffect(() => {
-    redirectLogedIn(router);
-  }, []);
+    redirectLogedIn(router, toast)
+  }, [])
 
-  const postLogin = async (event) => {
-    event.preventDefault();
-    let response = await fetch(`${process.env.ROOTAPI}/auth/login`, {
-      method: 'POST',
-      body: JSON.stringify({
-        email: email,
-        password: password
-      }),
-      headers: {
-        'Content-type': 'application/json',
-      },
-    })
-    if (response.ok) {
-      let jsonResponse = await response.json();
-      window.localStorage.setItem("token", jsonResponse.token);
-      router.push("/");
-    }
-    else {
-      toast.error("Error: incorrect email or password");
+  const postLogin = async event => {
+    event.preventDefault()
+    try {
+      let response = await fetch(`${process.env.ROOTAPI}/auth/login`, {
+        method: 'POST',
+        body: JSON.stringify({
+          email: email,
+          password: password
+        }),
+        headers: {
+          'Content-type': 'application/json'
+        }
+      })
+      if (response.ok) {
+        let jsonResponse = await response.json()
+        window.localStorage.setItem('token', jsonResponse.token)
+        router.push('/conversations')
+      } else {
+        toast.error('Error: incorrect email or password')
+      }
+    } catch {
+      toast.error('Error: Internal server error, try again later')
     }
   }
 
   const forgotPassword = () => {
-    toast("That's sad 😭");
+    toast("That's sad 😭")
   }
 
   return (
     <>
       <div className='flex flex-1 flex-col justify-center px-6 py-12 lg:px-8'>
         <div className='sm:mx-auto sm:w-full sm:max-w-sm'>
-          <Image
-            className='mx-auto h-10 w-auto'
-            src='./logo.svg'
-            alt='Y logo'
-          />
+          <img className='mx-auto h-10 w-auto' src='/logo.svg' alt='Y logo' />
           <h2 className='mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900'>
             Sign in to your account
           </h2>
@@ -72,7 +70,7 @@ export default function LoginPage () {
                   type='email'
                   autoComplete='email'
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   required
                   className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                 />
@@ -104,7 +102,7 @@ export default function LoginPage () {
                   type='password'
                   autoComplete='current-password'
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   required
                   className='block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6'
                 />

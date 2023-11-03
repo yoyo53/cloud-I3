@@ -1,7 +1,5 @@
 'use client'
 
-import Image from 'next/image'
-
 export default function About () {
   return (
     <div className='bg-white py-12 flex flex-col gap-y-10'>
@@ -28,9 +26,9 @@ export default function About () {
         >
           <li key='Hugo Parmentier'>
             <div className='flex justify-center items-center gap-x-6'>
-              <Image
+              <img
                 className='h-32 w-32 rounded-full'
-                src='./hugo.jpg'
+                src='/hugo.jpg'
                 alt=''
               />
               <div>
@@ -45,9 +43,9 @@ export default function About () {
           </li>
           <li key='Yohan Villiers'>
             <div className='flex justify-center items-center gap-x-6'>
-              <Image
+              <img
                 className='h-32 w-32 rounded-full'
-                src='./yohan.jpg'
+                src='/yohan.jpg'
                 alt=''
               />
               <div>

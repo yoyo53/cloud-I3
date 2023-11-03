@@ -1,4 +1,4 @@
-const { pool } = require("../../db.connection");
+const { pool } = require("../db.connection");
 
 exports.getMessageByIDconv = function(convID, userID) {
     return new Promise((resolve, reject) => {
