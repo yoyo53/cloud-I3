@@ -58,7 +58,7 @@ npm install
 1. Dans le répertoire du back-end, recherchez un fichier `.env.example`.
 2. Dupliquez ce fichier et renommez la copie en `.env`.
 3. Ouvrez le fichier `.env` dans un éditeur de texte.
-4. Configurez les variables d'environnement avec les informations de connexion pour la base de données PostgreSQL créée précédemment.
+4. Configurez les variables d'environnement avec les informations de connexion pour la base de données PostgreSQL créée précédemment ainsi qu'une clé secrete pour la génération des tokens.
 
 \
 **Étape 4 : Exécution du back-end**

@@ -47,8 +47,6 @@ export default function ChatPage() {
       });
   }
   useEffect(() => {
-    document.querySelector('body').classList.add('max-h-screen');
-
     // Lorsque le composant est monté, effectuez la requête fetch.
     token = window.localStorage.getItem("token");
 
@@ -89,7 +87,7 @@ export default function ChatPage() {
 
   return (
     
-<div className="flex-1 p-2 sm:p-6 justify-between flex flex-col h-screen bg-white">
+<div className="flex-1 p-2 sm:p-6 justify-between flex flex-col max-h-screen bg-white">
   {/* Header */}
   <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
     {/* User information */}
