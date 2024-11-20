@@ -28,3 +28,5 @@ app.get('/', (req, res) => {
 app.use('/auth', require('./routes/auth.routes'))
 app.use('/user', securityMiddleware.verifyToken, require('./routes/user.routes'))
 app.use('/conversations', securityMiddleware.verifyToken , require('./routes/conversations.routes'))
+
+module.exports = app

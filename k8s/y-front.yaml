@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: y-front
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: y-front
+  template:
+    metadata:
+      labels:
+        app: y-front
+    spec:
+      containers:
+        - name: y-front
+          image: ghcr.io/yoyo53/y-front:latest
+          imagePullPolicy: Always
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: y-front
+  name: y-front
+spec:
+  ports:
+    - nodePort: 30003
+      port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: y-front
+  type: LoadBalancer

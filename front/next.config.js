@@ -2,10 +2,10 @@
 const nextConfig = {
     reactStrictMode: true,
     output: 'export',
-    basePath: process.env.NODE_ENV == 'production' ? '/Y' : '',
+    basePath: '',
     env: {
-        ROOTAPI: 'https://y-back.fly.dev',
-        BASE_PATH: process.env.NODE_ENV == 'production' ? '/Y' : ''
+        ROOTAPI: 'https://y-back.local',
+        BASE_PATH: ''
     }
 }
 

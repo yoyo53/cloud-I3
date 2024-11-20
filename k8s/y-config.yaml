@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: y-db-secret
+data:
+  POSTGRES_PASSWORD: eS1kYi1wYXNzd29yZA==
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: y-back-secret
+data:
+  SECRET_KEY: eS1iYWNrLXNlY3JldA==
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: y-db-config
+  labels:
+    app: y-db
+data:
+  POSTGRES_DB: y-db
+  POSTGRES_USER: y-db-user

@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: y-back
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: y-back
+  template:
+    metadata:
+      labels:
+        app: y-back
+    spec:
+      containers:
+        - name: y-back
+          image: ghcr.io/yoyo53/y-back:latest
+          imagePullPolicy: Always
+          env:
+            - name: POSTGRES_HOST
+              value: y-db
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: y-db-config
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: y-db-config
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: y-db-secret
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_PORT
+              value: '5432'
+            - name: POSTGRES_SSL
+              value: 'true'
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: y-back-secret
+                  key: SECRET_KEY
+            - name: PORT
+              value: '3000'
+            - name: NODE_ENV
+              value: production
+            - name: NODE_EXTRA_CA_CERTS
+              value: /var/lib/postgresql/certs/y-CA.crt
+          volumeMounts:
+            - name: y-ca-tls-volume
+              mountPath: /var/lib/postgresql/certs
+      volumes:
+        - name: y-ca-tls-volume
+          secret:
+            secretName: y-ca-tls
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: y-back
+  name: y-back
+spec:
+  ports:
+    - nodePort: 30002
+      port: 3000
+      protocol: TCP
+      targetPort: 3000
+  selector:
+    app: y-back
+  type: LoadBalancer
