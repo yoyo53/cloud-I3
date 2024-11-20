@@ -13,14 +13,14 @@ jobs:
     defaults:
       run:
         working-directory: ./back
-        env:
-          POSTGRES_HOST: {{ secrets.POSTGRES_HOST }}
-          POSTGRES_USER: {{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: {{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: {{ secrets.POSTGRES_DB }}
-          POSTGRES_PORT: {{ secrets.POSTGRES_PORT }}
-          POSTGRES_SSL: {{ secrets.POSTGRES_SSL }}
-          SECRET_KEY: {{ secrets.SECRET_KEY }}
+      env:
+        POSTGRES_HOST: {{ secrets.POSTGRES_HOST }}
+        POSTGRES_USER: {{ secrets.POSTGRES_USER }}
+        POSTGRES_PASSWORD: {{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_DB: {{ secrets.POSTGRES_DB }}
+        POSTGRES_PORT: {{ secrets.POSTGRES_PORT }}
+        POSTGRES_SSL: {{ secrets.POSTGRES_SSL }}
+        SECRET_KEY: {{ secrets.SECRET_KEY }}
     steps:
       - uses: actions/checkout@main
       - name: Set up Node.js
@@ -48,3 +48,22 @@ jobs:
         run: npm install
       - name: Run tests
         run: npm test
+
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - name: Set up Minikube
+        run: minikube start
+      - name: Enable Ingress
+        run: minikube addons enable ingress
+      - name: Setup Ingress
+        run: bash setup-ingress-tcp.sh
+      - name: Create SSL Keys
+        run: bash create-ssl-keys.sh
+      - name: Wait for Ingress
+        run: kubectl wait pods -n ingress-nginx -l app.kubernetes.io/component=controller --for condition=Ready --timeout=90s
+      - name: Deploy
+        run: kubectl apply -f k8s
