@@ -20,7 +20,8 @@ jobs:
       POSTGRES_SSL: ${{ secrets.POSTGRES_SSL }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
     steps:
-      - uses: actions/checkout@main
+      - name: Checkout
+        uses: actions/checkout@main
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -38,7 +39,8 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@main
+      - name: Checkout
+        uses: actions/checkout@main
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -59,7 +61,8 @@ jobs:
       run:
         working-directory: ./front
     steps:
-      - uses: actions/checkout@main
+      - name: Checkout
+        uses: actions/checkout@main
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -81,7 +84,8 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@main
+      - name: Checkout
+        uses: actions/checkout@main
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -101,7 +105,8 @@ jobs:
     needs: [build-back, build-front]
     if: github.ref_name == 'main'
     steps:
-      - uses: actions/checkout@main
+      - name: Checkout
+        uses: actions/checkout@main
       - name: Set up Minikube
         run: minikube start
       - name: Enable Ingress
@@ -115,4 +120,6 @@ jobs:
       - name: Deploy
         run: kubectl apply -f k8s
       - name: Wait for Deployment
-        run: kubectl wait --for=condition=available --timeout=90s y-db y-back y-front
+        run: |
+          kubectl rollout status --watch --timeout=90s statefulset y-db
+          kubectl wait --for=condition=available --timeout=90s deployment y-back y-front
