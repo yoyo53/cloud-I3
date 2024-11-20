@@ -53,6 +53,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: self-hosted
+    needs: [test-back, test-front]
     steps:
       - uses: actions/checkout@main
       - name: Set up Minikube

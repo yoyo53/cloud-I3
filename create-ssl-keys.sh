@@ -1,8 +1,8 @@
 mkdir -p certs
-# rm -f certs/*
+rm -f certs/*
 cd certs
 
-# openssl req -x509 -new -nodes -newkey rsa:2048 -keyout y-CA.key -sha256 -days 365 -out y-CA.crt -subj "/C=FR/L=Paris"
+openssl req -x509 -new -nodes -newkey rsa:2048 -keyout y-CA.key -sha256 -days 365 -out y-CA.crt -subj "/C=FR/L=Paris"
 
 kubectl create secret generic y-ca-tls --from-file=y-CA.crt --dry-run=client -o yaml > ../k8s/y-tls.yaml
 
