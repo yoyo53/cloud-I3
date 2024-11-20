@@ -41,14 +41,17 @@ jobs:
         working-directory: ./back
     steps:
       - uses: actions/checkout@main
-      - name: Set up Docker
-        uses: actions/setup-docker@v2
-      - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/y-back:latest .
       - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-      - name: Push to GitHub Container Registry
-        run: docker push ghcr.io/${{ github.repository_owner }}/y-back:latest
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/y-back:latest
 
   test-front:
     name: Test Frontend 🧪
@@ -76,14 +79,17 @@ jobs:
         working-directory: ./front
     steps:
       - uses: actions/checkout@main
-      - name: Set up Docker
-        uses: actions/setup-docker@v2
-      - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/y-front:latest .
       - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-      - name: Push to GitHub Container Registry
-        run: docker push ghcr.io/${{ github.repository_owner }}/y-front:latest
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/y-front:latest
 
   deploy:
     name: Deploy to Minikube 🚀
