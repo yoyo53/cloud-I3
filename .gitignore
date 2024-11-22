@@ -1,2 +1,5 @@
-certs
-k8s/y-tls.yaml
+.env
+certs/*
+k8s/*
+!.gitkeep
+!certs/template.ext

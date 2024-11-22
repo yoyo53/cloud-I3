@@ -11,13 +11,14 @@ jobs:
     defaults:
       run:
         working-directory: ./back
+    environment: test
     env:
-      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
+      POSTGRES_BASE_PATH: ${{ vars.POSTGRES_BASE_PATH }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
-      POSTGRES_SSL: ${{ secrets.POSTGRES_SSL }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
     steps:
       - name: Checkout
@@ -60,6 +61,10 @@ jobs:
     defaults:
       run:
         working-directory: ./front
+    environment: test
+    env:
+      API_URL: ${{ vars.BACK_URL }}
+      BASE_PATH: ${{ vars.FRONT_BASE_PATH }}
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -104,6 +109,25 @@ jobs:
     runs-on: self-hosted
     needs: [build-back, build-front]
     if: github.ref_name == 'main'
+    environment: prod
+    env:
+      POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
+      POSTGRES_BASE_PATH: ${{ vars.POSTGRES_BASE_PATH }}
+      POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_SSL: ${{ vars.POSTGRES_SSL }}
+      BACK_HOST: ${{ vars.BACK_HOST }}
+      BACK_PORT: ${{ vars.BACK_PORT }}
+      BACK_BASE_PATH: ${{ vars.BACK_BASE_PATH }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      BACK_URL: ${{ vars.BACK_URL }}
+      FRONT_HOST: ${{ vars.FRONT_HOST }}
+      FRONT_PORT: ${{ vars.FRONT_PORT }}
+      FRONT_BASE_PATH: ${{ vars.FRONT_BASE_PATH }}
+      CA_CERT: ${{ secrets.CA_CERT }}
+      CA_KEY: ${{ secrets.CA_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -111,6 +135,8 @@ jobs:
         run: minikube start
       - name: Enable Ingress
         run: minikube addons enable ingress
+      - name: Create Kubernetes Manifests from Templates
+        run: find k8s-templates -type f -name "*.yaml" -exec sh -c 'mkdir -p k8s/$(dirname {} | sed "s|k8s-templates/||") && envsubst < {} > k8s/$(echo {} | sed "s|k8s-templates/||")' \;
       - name: Setup Ingress
         run: bash setup-ingress-tcp.sh
       - name: Create SSL Keys
@@ -118,8 +144,8 @@ jobs:
       - name: Wait for Ingress
         run: kubectl wait pods -n ingress-nginx -l app.kubernetes.io/component=controller --for condition=Ready --timeout=90s
       - name: Deploy
-        run: kubectl apply -f k8s
-      - name: Wait for Deployment
-        run: |
-          kubectl rollout status --watch --timeout=90s statefulset y-db
-          kubectl wait --for=condition=available --timeout=90s deployment y-back y-front
+        run: kubectl apply -f k8s/default
+      - name: Wait for DB StatefulSet
+        run: kubectl rollout status --watch --timeout=90s statefulset y-db
+      - name: Wait for Deployments
+        run: kubectl wait --for=condition=available --timeout=90s deployment y-back y-front

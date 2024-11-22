@@ -1,6 +1,0 @@
-spec:
-  ports:
-    - name: proxied-tcp-5432
-      port: 5432
-      targetPort: 5432
-      protocol: TCP

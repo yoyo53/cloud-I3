@@ -16,6 +16,11 @@ spec:
         - name: y-front
           image: ghcr.io/yoyo53/y-front:latest
           imagePullPolicy: Always
+          env:
+            - name: NEXT_APP_API_URL
+              value: ${BACK_URL}
+            - name: NEXT_APP_BASE_PATH
+              value: ${FRONT_BASE_PATH}
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -27,7 +32,7 @@ metadata:
 spec:
   ports:
     - nodePort: 30003
-      port: 80
+      port: ${FRONT_PORT}
       protocol: TCP
       targetPort: 80
   selector:

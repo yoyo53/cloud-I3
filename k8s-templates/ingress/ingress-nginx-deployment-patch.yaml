@@ -4,7 +4,7 @@
 - op: add
   path: /spec/template/spec/containers/0/ports/0
   value: 
-    name: tcp-5432
-    containerPort: 5432
-    hostPort: 5432
+    name: tcp-postgres
+    containerPort: ${POSTGRES_PORT}
+    hostPort: ${POSTGRES_PORT}
     protocol: TCP

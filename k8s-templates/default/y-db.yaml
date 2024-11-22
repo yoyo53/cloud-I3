@@ -50,21 +50,17 @@ spec:
           imagePullPolicy: Always
           command: ["docker-entrypoint.sh", "-c", "ssl=on", "-c", "ssl_cert_file=/var/lib/postgresql/certs/tls.crt", "-c", "ssl_key_file=/var/lib/postgresql/certs/tls.key"]
           env:
+            - name: POSTGRES_PORT
+              value: "${POSTGRES_PORT}"
+            - name: POSTGRES_DB
+              value: ${POSTGRES_DB}
+            - name: POSTGRES_USER
+              value: ${POSTGRES_USER}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: y-db-secret
                   key: POSTGRES_PASSWORD
-            - name: POSTGRES_DB
-              valueFrom:
-                configMapKeyRef:
-                  name: y-db-config
-                  key: POSTGRES_DB
-            - name: POSTGRES_USER
-              valueFrom:
-                configMapKeyRef:
-                  name: y-db-config
-                  key: POSTGRES_USER
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: y-db-volume
@@ -89,9 +85,9 @@ metadata:
 spec:
   ports:
     - nodePort: 30001
-      port: 5432
+      port: ${POSTGRES_PORT}
       protocol: TCP
-      targetPort: 5432
+      targetPort: ${POSTGRES_PORT}
   selector:
     app: y-db
   type: NodePort

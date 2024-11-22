@@ -4,4 +4,4 @@ metadata:
   name: tcp-services
   namespace: ingress-nginx
 data:
-  5432: "default/y-db:5432"
+  ${POSTGRES_PORT}: "default/y-db:${POSTGRES_PORT}"

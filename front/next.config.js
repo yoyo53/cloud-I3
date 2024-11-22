@@ -1,11 +1,14 @@
 /** @type {import('next').NextConfig} */
+
+const config = require('./config').config
+
 const nextConfig = {
     reactStrictMode: true,
     output: 'export',
-    basePath: '',
+    basePath: config.base_url,
     env: {
-        ROOTAPI: 'https://y-back.local',
-        BASE_PATH: ''
+        ROOTAPI: config.api_url,
+        BASE_PATH: config.base_url
     }
 }
 
