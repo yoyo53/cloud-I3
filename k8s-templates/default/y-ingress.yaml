@@ -17,7 +17,7 @@ spec:
     - host: ${FRONT_HOST}
       http:
         paths:
-          - path: /?${FRONT_BASE_PATH}(?:$|/|(?<=/))(.*)
+          - path: ${FRONT_BASE_PATH}/?(.*)
             pathType: ImplementationSpecific
             backend:
               service:
@@ -27,7 +27,7 @@ spec:
     - host: ${BACK_HOST}
       http:
         paths:
-          - path: /?${BACK_BASE_PATH}(?:$|/|(?<=/))(.*)
+          - path: ${BACK_BASE_PATH}/?(.*)
             pathType: ImplementationSpecific
             backend:
               service:
@@ -37,7 +37,7 @@ spec:
     - host: ${POSTGRES_HOST}
       http:
         paths:
-          - path: /?${POSTGRES_BASE_PATH}(?:$|/|(?<=/))(.*)
+          - path: ${POSTGRES_BASE_PATH}/?(.*)
             pathType: ImplementationSpecific
             backend:
               service:
