@@ -1,0 +1,96 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: y-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 443
+      name: y-front
+      protocol: HTTPS
+    hosts:
+    - ${FRONT_HOST}
+    tls:
+      mode: SIMPLE
+      credentialName: y-front-tls
+  - port:
+      number: 443
+      name: y-back
+      protocol: HTTPS
+    hosts:
+    - ${BACK_HOST}
+    tls:
+      mode: SIMPLE
+      credentialName: y-back-tls
+  - port:
+      number: 5432
+      name: y-db
+      protocol: TCP
+    hosts:
+    - ${POSTGRES_HOST}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: y-front-proxy
+spec:
+  hosts:
+  - ${FRONT_HOST}
+  gateways:
+  - y-gateway
+  http:
+  - match:
+    - uri:
+        regex: ${FRONT_BASE_PATH}/?(.*)
+    rewrite:
+      uriRegexRewrite:
+        match: ${FRONT_BASE_PATH}/?(.*)
+        rewrite: /\1
+    route:
+    - destination:
+        port:
+          number: ${FRONT_PORT}
+        host: y-front
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: y-back-proxy
+spec:
+  hosts:
+  - ${BACK_HOST}
+  gateways:
+  - y-gateway
+  http:
+  - match:
+    - uri:
+        regex: ${BACK_BASE_PATH}/?(.*)
+    rewrite:
+      uriRegexRewrite:
+        match: ${BACK_BASE_PATH}/?(.*)
+        rewrite: /\1
+    route:
+    - destination:
+        port:
+          number: ${BACK_PORT}
+        host: y-back
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: y-db-proxy
+spec:
+  hosts:
+  - ${POSTGRES_HOST}
+  gateways:
+  - y-gateway
+  tcp:
+  - match:
+    - port: ${POSTGRES_PORT}
+    route:
+    - destination:
+        port:
+          number: ${POSTGRES_PORT}
+        host: y-db

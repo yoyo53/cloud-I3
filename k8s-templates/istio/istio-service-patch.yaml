@@ -1,0 +1,6 @@
+spec:
+  ports:
+    - name: proxied-tcp-postgres
+      port: ${POSTGRES_PORT}
+      targetPort: ${POSTGRES_PORT}
+      protocol: TCP

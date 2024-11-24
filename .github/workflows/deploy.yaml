@@ -2,6 +2,16 @@ name: Test and Deploy 🚀
 
 on:
   workflow_dispatch:
+    inputs:
+      gatewayMode:
+        description: 'Choose the Gateway Mode'
+        required: true
+        default: ingress
+        type: choice
+        options:
+          - ingress
+          - istio
+
   push:
 
 jobs:
@@ -126,30 +136,69 @@ jobs:
       FRONT_HOST: ${{ vars.FRONT_HOST }}
       FRONT_PORT: ${{ vars.FRONT_PORT }}
       FRONT_BASE_PATH: ${{ vars.FRONT_BASE_PATH }}
+      ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
       CA_CERT: ${{ secrets.CA_CERT }}
       CA_KEY: ${{ secrets.CA_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@main
-      - name: Set up Minikube
-        run: minikube start
-      - name: Enable Ingress
-        run: minikube addons enable ingress
       - name: Encrypt Secrets for Kubernetes
         run: |
           echo "POSTGRES_PASSWORD=$(echo -n $POSTGRES_PASSWORD | base64)" >> $GITHUB_ENV
           echo "SECRET_KEY=$(echo -n $SECRET_KEY | base64)" >> $GITHUB_ENV
+          echo "ENCRYPTION_KEY=$(echo -n $ENCRYPTION_KEY | base64)" >> $GITHUB_ENV
       - name: Create Kubernetes Manifests from Templates
-        run: find k8s-templates -type f -name "*.yaml" -exec sh -c 'mkdir -p k8s/$(dirname {} | sed "s|k8s-templates/||") && envsubst < {} > k8s/$(echo {} | sed "s|k8s-templates/||")' \;
-      - name: Setup Ingress
-        run: bash setup-ingress-tcp.sh
-      - name: Create SSL Keys
+        run: find k8s-templates -type f -name "*.yaml" -exec sh -c 'mkdir -p k8s/$(dirname {} | sed -E "s|k8s-templates/?||") && envsubst < {} > k8s/$(echo {} | sed -E "s|k8s-templates/?||")' \;
+      - name: Move Encryption Config to Minikube mount
+        run: |
+          mkdir -p ~/.minikube/files/var/lib/minikube/certs
+          cp k8s/encryption-config.yaml ~/.minikube/files/var/lib/minikube/certs/encryption-config.yaml
+      - name: Start Minikube with Encryption Config
+        run: minikube start --extra-config=apiserver.encryption-provider-config=/var/lib/minikube/certs/encryption-config.yaml
+      - name: Create Self-Signed SSL Certs
         run: bash create-ssl-keys.sh
-      - name: Wait for Ingress
-        run: kubectl wait pods -n ingress-nginx -l app.kubernetes.io/component=controller --for condition=Ready --timeout=90s
-      - name: Deploy
+      - name: Apply Default Manifests
         run: kubectl apply -f k8s/default
       - name: Wait for DB StatefulSet
         run: kubectl rollout status --watch --timeout=90s statefulset y-db
       - name: Wait for Deployments
         run: kubectl wait --for=condition=available --timeout=90s deployment y-back y-front
+
+      - name: Enable Ingress Add-on
+        if: ${{ github.event.inputs.gatewayMode == 'ingress' || github.event.inputs.gatewayMode == null }}
+        run: minikube addons enable ingress
+      - name: Wait for Ingress Controller
+        if: ${{ github.event.inputs.gatewayMode == 'ingress' || github.event.inputs.gatewayMode == null }}
+        run: kubectl wait pods -n ingress-nginx -l app.kubernetes.io/component=controller --for condition=Ready --timeout=90s
+      - name: Patch Ingress for TCP Services
+        if: ${{ github.event.inputs.gatewayMode == 'ingress' || github.event.inputs.gatewayMode == null }}
+        run: |
+          kubectl patch service ingress-nginx-controller -n ingress-nginx --patch-file k8s/ingress/ingress-service-patch.yaml
+          kubectl apply -f  k8s/ingress/tcp-services.yaml
+          kubectl patch deployment ingress-nginx-controller -n ingress-nginx --patch-file k8s/ingress/ingress-deployment-patch.yaml --type=json
+      - name: Apply Ingress Config
+        if: ${{ github.event.inputs.gatewayMode == 'ingress' || github.event.inputs.gatewayMode == null }}
+        run: kubectl apply -f k8s/ingress/ingress-config.yaml
+      
+      - name: Enable Istio Add-on
+        if: ${{ github.event.inputs.gatewayMode == 'istio' }}
+        run: |
+          minikube addons enable istio-provisioner
+          minikube addons enable istio
+      - name: Wait for Istio Ingress Gateway
+        if: ${{ github.event.inputs.gatewayMode == 'istio' }}
+        run: |
+          timeout=90; until kubectl get deployment istio-ingressgateway -n istio-system >/dev/null 2>&1; do ((timeout--)) || exit 1; sleep 1; done
+          kubectl wait deployment istio-ingressgateway -n istio-system --for=condition=available --timeout=90s
+      - name: Patch Istio for TCP Services
+        if: ${{ github.event.inputs.gatewayMode == 'istio' }}
+        run: kubectl patch service istio-ingressgateway -n istio-system --patch-file k8s/istio/istio-service-patch.yaml
+      - name: Enable Mutual TLS
+        if: ${{ github.event.inputs.gatewayMode == 'istio' }}
+        run: kubectl apply -f k8s/istio/mtls-config.yaml
+      - name: Create Secrets for Istio
+        if: ${{ github.event.inputs.gatewayMode == 'istio' }}
+        run: kubectl apply -f k8s/default/y-tls.yaml -n istio-system
+      - name: Apply Istio Config
+        if: ${{ github.event.inputs.gatewayMode == 'istio' }}
+        run: kubectl apply -f k8s/istio/istio-config.yaml

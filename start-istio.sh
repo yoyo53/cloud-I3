@@ -27,19 +27,26 @@ kubectl apply -f k8s/default
 kubectl rollout status --watch --timeout=90s statefulset y-db
 kubectl wait --for=condition=available --timeout=90s deployment y-back y-front
 
-# Enable Ingress add-on
-minikube addons enable ingress
+# Enable Istio add-ons
+minikube addons enable istio-provisioner
+minikube addons enable istio
 
-# Wait for Ingress controller to be available
-kubectl wait pods -n ingress-nginx -l app.kubernetes.io/component=controller --for condition=Ready --timeout=90s
+# Wait for Istio Ingress Gateway to be available
+timeout=90; until kubectl get deployment istio-ingressgateway -n istio-system >/dev/null 2>&1; do ((timeout--)) || exit 1; sleep 1; done
+kubectl wait deployment istio-ingressgateway -n istio-system --for=condition=available --timeout=90s
 
-# Patch Ingress controller to support postgres TCP service
-kubectl patch service ingress-nginx-controller -n ingress-nginx --patch-file k8s/ingress/ingress-service-patch.yaml
-kubectl apply -f  k8s/ingress/tcp-services.yaml
-kubectl patch deployment ingress-nginx-controller -n ingress-nginx --patch-file k8s/ingress/ingress-deployment-patch.yaml --type=json
+# Patch Istio Ingress Gateway to support postgres TCP service
+kubectl patch service istio-ingressgateway -n istio-system --patch-file k8s/istio/istio-service-patch.yaml
 
-# Apply Ingress configuration
-kubectl apply -f k8s/ingress/ingress-config.yaml
+# Enable mutual TLS authentication
+kubectl apply -f k8s/istio/mtls-config.yaml -n istio-system
 
-# Edit /etc/hosts file to add Minikube IP address
-# sudo bash -c "echo $(minikube ip) $POSTGRES_HOST $BACK_HOST $FRONT_HOST >> /etc/hosts"
+# Create TLS secrets for Istio Ingress Gateway
+kubectl apply -f k8s/default/y-tls.yaml -n istio-system
+
+# Apply Istio configuration
+kubectl apply -f k8s/istio/istio-config.yaml
+
+# Edit /etc/hosts file to add Istio Ingress Gateway IP address
+# minikube tunnel
+# sudo bash -c "echo $(kubectl get svc istio-ingressgateway -n istio-system -o jsonpath='{.status.loadBalancer.ingress[].ip}') $POSTGRES_HOST $BACK_HOST $FRONT_HOST >> /etc/hosts"
