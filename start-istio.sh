@@ -20,6 +20,9 @@ minikube start --extra-config=apiserver.encryption-provider-config=/var/lib/mini
 # Create self-signed SSL certificates 
 bash create-ssl-keys.sh
 
+# Create Kubernetes Secret for Docker registry
+kubectl create secret docker-registry y-registry --docker-server=$REGISTRY_SERVER --docker-username=$REGISTRY_USER --docker-password=$REGISTRY_PASSWORD
+
 # Apply default Kubernetes configuration
 kubectl apply -f k8s/default
 
@@ -31,12 +34,14 @@ kubectl wait --for=condition=available --timeout=90s deployment y-back y-front
 minikube addons enable istio-provisioner
 minikube addons enable istio
 
-# Wait for Istio Ingress Gateway to be available
+# Wait for Istio Ingress Gateway to be created
 timeout=90; until kubectl get deployment istio-ingressgateway -n istio-system >/dev/null 2>&1; do ((timeout--)) || exit 1; sleep 1; done
-kubectl wait deployment istio-ingressgateway -n istio-system --for=condition=available --timeout=90s
 
 # Patch Istio Ingress Gateway to support postgres TCP service
 kubectl patch service istio-ingressgateway -n istio-system --patch-file k8s/istio/istio-service-patch.yaml
+
+# Wait for Istio Ingress Gateway to be available
+kubectl wait deployment istio-ingressgateway -n istio-system --for=condition=available --timeout=90s
 
 # Enable mutual TLS authentication
 kubectl apply -f k8s/istio/mtls-config.yaml -n istio-system

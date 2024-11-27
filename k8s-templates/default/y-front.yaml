@@ -21,6 +21,8 @@ spec:
               value: ${BACK_URL}
             - name: NEXT_APP_BASE_PATH
               value: ${FRONT_BASE_PATH}
+      imagePullSecrets:
+        - name: y-registry
       restartPolicy: Always
 ---
 apiVersion: v1

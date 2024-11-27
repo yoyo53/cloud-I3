@@ -46,6 +46,8 @@ spec:
           volumeMounts:
             - name: y-ca-tls-volume
               mountPath: /var/lib/postgresql/certs
+      imagePullSecrets:
+        - name: y-registry
       volumes:
         - name: y-ca-tls-volume
           secret:

@@ -139,6 +139,9 @@ jobs:
       ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
       CA_CERT: ${{ secrets.CA_CERT }}
       CA_KEY: ${{ secrets.CA_KEY }}
+      REGISTRY_SERVER: ghcr.io
+      REGISTRY_USER: ${{ github.repository_owner }}
+      REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -157,6 +160,8 @@ jobs:
         run: minikube start --extra-config=apiserver.encryption-provider-config=/var/lib/minikube/certs/encryption-config.yaml
       - name: Create Self-Signed SSL Certs
         run: bash create-ssl-keys.sh
+      - name: Create Secret for Docker Registry
+        run: kubectl create secret docker-registry y-registry --docker-server=$REGISTRY_SERVER --docker-username=$REGISTRY_USER --docker-password=$REGISTRY_PASSWORD
       - name: Apply Default Manifests
         run: kubectl apply -f k8s/default
       - name: Wait for DB StatefulSet
@@ -167,15 +172,15 @@ jobs:
       - name: Enable Ingress Add-on
         if: ${{ github.event.inputs.gatewayMode == 'ingress' || github.event.inputs.gatewayMode == null }}
         run: minikube addons enable ingress
-      - name: Wait for Ingress Controller
-        if: ${{ github.event.inputs.gatewayMode == 'ingress' || github.event.inputs.gatewayMode == null }}
-        run: kubectl wait pods -n ingress-nginx -l app.kubernetes.io/component=controller --for condition=Ready --timeout=90s
       - name: Patch Ingress for TCP Services
         if: ${{ github.event.inputs.gatewayMode == 'ingress' || github.event.inputs.gatewayMode == null }}
         run: |
           kubectl patch service ingress-nginx-controller -n ingress-nginx --patch-file k8s/ingress/ingress-service-patch.yaml
           kubectl apply -f  k8s/ingress/tcp-services.yaml
           kubectl patch deployment ingress-nginx-controller -n ingress-nginx --patch-file k8s/ingress/ingress-deployment-patch.yaml --type=json
+      - name: Wait for Ingress Controller
+        if: ${{ github.event.inputs.gatewayMode == 'ingress' || github.event.inputs.gatewayMode == null }}
+        run: kubectl wait pods -n ingress-nginx -l app.kubernetes.io/component=controller --for condition=Ready --timeout=90s
       - name: Apply Ingress Config
         if: ${{ github.event.inputs.gatewayMode == 'ingress' || github.event.inputs.gatewayMode == null }}
         run: kubectl apply -f k8s/ingress/ingress-config.yaml
@@ -185,14 +190,15 @@ jobs:
         run: |
           minikube addons enable istio-provisioner
           minikube addons enable istio
-      - name: Wait for Istio Ingress Gateway
+      - name: Wait for Istio Ingress Gateway Creation
         if: ${{ github.event.inputs.gatewayMode == 'istio' }}
-        run: |
-          timeout=90; until kubectl get deployment istio-ingressgateway -n istio-system >/dev/null 2>&1; do ((timeout--)) || exit 1; sleep 1; done
-          kubectl wait deployment istio-ingressgateway -n istio-system --for=condition=available --timeout=90s
+        run: timeout=90; until kubectl get deployment istio-ingressgateway -n istio-system >/dev/null 2>&1; do ((timeout--)) || exit 1; sleep 1; done
       - name: Patch Istio for TCP Services
         if: ${{ github.event.inputs.gatewayMode == 'istio' }}
         run: kubectl patch service istio-ingressgateway -n istio-system --patch-file k8s/istio/istio-service-patch.yaml
+      - name: Wait for Istio Ingress Gateway Ready
+        if: ${{ github.event.inputs.gatewayMode == 'istio' }}
+        run: kubectl wait deployment istio-ingressgateway -n istio-system --for=condition=available --timeout=90s
       - name: Enable Mutual TLS
         if: ${{ github.event.inputs.gatewayMode == 'istio' }}
         run: kubectl apply -f k8s/istio/mtls-config.yaml

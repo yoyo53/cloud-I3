@@ -20,6 +20,9 @@ minikube start --extra-config=apiserver.encryption-provider-config=/var/lib/mini
 # Create self-signed SSL certificates 
 bash create-ssl-keys.sh
 
+# Create Kubernetes Secret for Docker registry
+kubectl create secret docker-registry y-registry --docker-server=$REGISTRY_SERVER --docker-username=$REGISTRY_USER --docker-password=$REGISTRY_PASSWORD
+
 # Apply default Kubernetes configuration
 kubectl apply -f k8s/default
 
@@ -30,13 +33,13 @@ kubectl wait --for=condition=available --timeout=90s deployment y-back y-front
 # Enable Ingress add-on
 minikube addons enable ingress
 
-# Wait for Ingress controller to be available
-kubectl wait pods -n ingress-nginx -l app.kubernetes.io/component=controller --for condition=Ready --timeout=90s
-
 # Patch Ingress controller to support postgres TCP service
 kubectl patch service ingress-nginx-controller -n ingress-nginx --patch-file k8s/ingress/ingress-service-patch.yaml
 kubectl apply -f  k8s/ingress/tcp-services.yaml
 kubectl patch deployment ingress-nginx-controller -n ingress-nginx --patch-file k8s/ingress/ingress-deployment-patch.yaml --type=json
+
+# Wait for Ingress controller to be available
+kubectl wait pods -n ingress-nginx -l app.kubernetes.io/component=controller --for condition=Ready --timeout=90s
 
 # Apply Ingress configuration
 kubectl apply -f k8s/ingress/ingress-config.yaml
