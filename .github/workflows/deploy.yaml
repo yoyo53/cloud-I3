@@ -159,7 +159,7 @@ jobs:
       - name: Start Minikube with Encryption Config
         run: minikube start --extra-config=apiserver.encryption-provider-config=/var/lib/minikube/certs/encryption-config.yaml
       - name: Create Self-Signed SSL Certs
-        run: bash create-ssl-keys.sh
+        run: bash scripts/create-ssl-keys.sh
       - name: Create Secret for Docker Registry
         run: kubectl create secret docker-registry y-registry --docker-server=$REGISTRY_SERVER --docker-username=$REGISTRY_USER --docker-password=$REGISTRY_PASSWORD
       - name: Apply Default Manifests

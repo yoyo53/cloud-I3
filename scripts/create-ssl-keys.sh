@@ -1,8 +1,9 @@
+#!/bin/bash
+
 mkdir -p certs
 mkdir -p k8s/default
 cd certs
 
-# openssl req -x509 -new -nodes -newkey rsa:2048 -keyout y-CA.key -sha256 -days 365 -out y-CA.crt -subj "/C=FR/L=Paris"
 echo -e $CA_CERT > y-CA.crt
 echo -e $CA_KEY > y-CA.key
 
@@ -28,15 +29,3 @@ openssl req -new -nodes -newkey rsa:2048 -keyout y-db.key -out y-db.csr -subj "/
 cat template.ext | sed "s/%%DOMAIN%%/${POSTGRES_HOST}\nDNS.1 = y-db/g" > y-db.ext
 openssl x509 -req -in y-db.csr -CA y-CA.crt -CAkey y-CA.key -CAcreateserial -out y-db.crt -days 365 -sha256 -extfile y-db.ext
 kubectl create secret tls y-db-tls --cert=y-db.crt --key=y-db.key --dry-run=client -o yaml >> ../k8s/default/y-tls.yaml
-
-# install the CA in the system
-# sudo cp y-CA.crt /usr/local/share/ca-certificates/y-CA.crt
-# sudo update-ca-certificates
-
-# add the CA to nodejs NODE_EXTRA_CA_CERTS
-# echo "export NODE_EXTRA_CA_CERTS=$(pwd)/y-CA.crt" >> ~/.bashrc
-
-
-# update chrome to trust the CA
-# chrome://settings/certificates
-# Authorities -> Import y-CA.crt

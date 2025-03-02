@@ -1,108 +1,152 @@
-# Y
-[![](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
-[![](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)](https://expressjs.com/)
-[![](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+# Cloud Project: Secure and Scalable Microservices Deployment
 
-Y. The new way to chat. Join us now and start chatting with millions other users on our [website](https://yoyo53.github.io/Y).
+## Overview
+This project is a cloud-native microservices application designed for deployment on Kubernetes, secured with SSL/TLS encryption. It features multiple services communicating through a gateway and a PostgreSQL database, with an automated CI/CD pipeline managed via GitHub Actions.
 
-## Démonstration
+This project builds upon a previous web application, [Y](https://github.com/yoyo53/Y), by integrating cloud-native design patterns, enhanced security measures, and automated deployment workflows.
 
-Afin de démontrer la viabilité de cette solution, une version de démonstration a été déployée depuis ce dépôt GitHub.  
-La base de données PostgreSQL est déployée sur [neon.tech](https://neon.tech), le back-end sur [Fly.io](https://fly.io) et le front-end sur [GitHub Pages](https://pages.github.com/).  
-URL de l'API (back-end) : <https://y-back.fly.dev/>  
-URL du site web (front-end) : <https://yoyo53.github.io/Y>
+## Features
+- **Microservices Architecture**: Implements cloud-native best practices for scalability and maintainability.
+- **Containerization**: Uses Docker for encapsulating services.
+- **Kubernetes Deployment**: Managed via Minikube for local development and testing.
+- **CI/CD Pipeline**: Automated testing, building, and deployment through GitHub Actions.
+- **Database Integration**: PostgreSQL database secured with SSL.
+- **SSL/TLS Encryption**: Automated certificate generation and secure communication setup.
+- **Ingress & Service Mesh Support**: Configurable deployment options for Ingress or Istio gateways.
 
-## Installation
+## Technology Stack
+- **Backend**: Node.js with Express.js
+- **Frontend**: Next.js
+- **Database**: PostgreSQL
+- **Orchestration**: Kubernetes (Minikube for local deployment)
+- **Containerization**: Docker
+- **CI/CD**: GitHub Actions
+- **Security**: SSL/TLS certificates managed via OpenSSL and Kubernetes secrets
 
-Cette application web ayant été réalisée en mode n-tier, cela signifie qu’elle est constituée de trois parties distinctes pouvant ainsi être déployée de manière indépendante (possiblement sur des serveurs différents) :
-- La bases de données utilisée par l’application (PostgreSQL)
-- Le back-end (API Express.js pour interagir avec la base de données)
-- Le front-end (site web statique qui interagit avec l’API)
-
-### Création de la base de données PostgreSQL
-
-La première étape du déploiement consiste donc à créer et configurer cette base de données utilisées par l’application.
-\
-1. Créez une nouvelle instance PostgreSQL sur l’hébergeur de votre choix (ou votre propre serveur).
-2. Dans cette instance, créez une nouvelle base de données ainsi qu’un nouvel utilisateur ayant tous les droits sur cette base de données.
-3. Conservez le nom de domaine de l’instance PostgreSQL, le nom de la base de donnée ainsi que le nom et le mot de passe de l’utilisateur pour les étapes suivantes.
-
-### Déploiement du back-end
-
-Assurez-vous d'avoir Node.js et Git installés sur votre machine avant de commencer.
-
-\
-**Étape 1 : Cloner le dépôt GitHub**
-1. Ouvrez une ligne de commande ou un terminal.
-2. Naviguez vers le répertoire où vous souhaitez cloner le projet.
-3. Exécutez la commande suivante pour cloner le dépôt depuis GitHub :
-```bash
-git clone https://github.com/yoyo53/Y.git
+## Project Structure
+```
+|-- back/                    # Backend service (Node.js, Express)
+|-- front/                   # Frontend service (Next.js)
+|-- k8s-templates/           # Kubernetes manifest templates (filled with env variables)
+|-- k8s/                     # Generated Kubernetes manifests
+|-- certs/                   # SSL certificates (generated during deployment)
+|-- scripts/
+|   |-- create-ssl-keys.sh   # Script to generate SSL keys
+|   |-- start-istio.sh       # Script to deploy Minikube cluster with Istio gateway
+|   |-- start-ingress.sh     # Script to deploy Minikube cluster with Ingress gateway
+|   |-- start.sh             # Script to deploy Minikube cluster without a gateway
+|-- .github/workflows/
+|   |-- deploy.yaml          # GitHub Actions pipeline
+|-- .env.example             # Example environment variables required for the project
+|-- README.md                # Project documentation
 ```
 
-\
-**Étape 2 : Configuration du back-end**
-1. Accédez au répertoire du back-end :
-```bash
-cd Y/back
+## How the Application Works
+The application is a real-time messaging platform where users can:
+- **Create an account and log in** securely using authentication mechanisms.
+- **Chat with other users** in real-time via a responsive front-end application.
+- **Store and retrieve messages** using a PostgreSQL database.
+- **Communicate securely** through SSL/TLS encryption.
+- **Interact via an API gateway**, which routes requests to the appropriate backend services.
+
+### User Flow
+1. **User Registration & Authentication**
+   - New users can sign up and create an account.
+   - Authentication is handled securely with token-based authentication.
+2. **Messaging Features**
+   - Users can send and receive messages in real time.
+   - Messages are stored persistently in the PostgreSQL database.
+   - Users can retrieve their message history.
+3. **Secure Communication**
+   - All data transmission is encrypted with SSL/TLS.
+   - The API is protected through authentication and authorization mechanisms.
+
+Upon successful deployment, users should expect:
+- A fully functional web-based messaging app accessible via a domain or IP.
+- Secure API endpoints for handling user authentication and messaging.
+- A PostgreSQL database storing user and message data.
+
+## CI/CD Pipeline
+The deployment workflow is fully automated using GitHub Actions and consists of the following steps:
+
+### 1. Testing
+- Runs automated tests on both the frontend and backend for every push to any branch, ensuring code integrity.
+
+### 2. Build and Push
+- Builds Docker images for the frontend and backend.
+- Pushes these images to the GitHub Container Registry (GHCR) when changes are pushed to the `main` branch.
+
+### 3. Deployment
+- Runs on a **self-hosted GitHub runner** to deploy the application.
+- **Applies Kubernetes manifests** to Minikube.
+- **Configurable Gateway Mode**: Supports both Istio and Ingress, selectable via input parameters.
+- **Secure Secrets Management**: Uses environment variables and GitHub secrets for configuration.
+- **Automatic SSL Encryption**: Generates and manages SSL/TLS certificates using a dedicated script.
+
+### Manual Deployment
+To manually trigger a deployment with a specific gateway, run:
+```sh
+gh workflow run deploy.yaml -f gatewayMode=ingress
 ```
-2. Exécutez la commande suivante pour installer les dépendances :
-```bash
-npm install
+OR
+```sh
+gh workflow run deploy.yaml -f gatewayMode=istio
+```
+By default, a push will use **Ingress mode** unless otherwise specified.
+
+### Environment Variables & Secrets
+The pipeline is fully configurable through environment variables and secrets:
+- **Secrets**: Stores sensitive data such as database credentials and encryption keys.
+- **Environment Variables**: Defines database connection parameters, service URLs, and other runtime settings.
+- **Kubernetes Secrets Integration**: Automatically encrypts and injects secrets into deployments for enhanced security.
+
+## Testing Locally with Minikube
+To test the application locally using Minikube, follow these steps:
+
+### 1. Generate SSL Certificates
+Run the following command to create the necessary certificates:
+```sh
+openssl req -x509 -new -nodes -newkey rsa:2048 -keyout y-CA.key -sha256 -days 365 -out y-CA.crt -subj "/C=FR/L=Paris"
 ```
 
-\
-**Étape 3 : Configuration des variables d'environnement**
-1. Dans le répertoire du back-end, recherchez un fichier `.env.example`.
-2. Dupliquez ce fichier et renommez la copie en `.env`.
-3. Ouvrez le fichier `.env` dans un éditeur de texte.
-4. Configurez les variables d'environnement avec les informations de connexion pour la base de données PostgreSQL créée précédemment ainsi qu'une clé secrete pour la génération des tokens.
+### 2. Add Certificate to Chrome
+1. Open `chrome://settings/certificates`
+2. Navigate to `Authorities`
+3. Import `y-CA.crt`
 
-\
-**Étape 4 : Exécution du back-end**
-1. Exécutez la commande suivante pour démarrer le serveur :
-```bash
-npm run start
-```
-Le serveur back-end est désormais en cours d'exécution.
-
-### Déploiement du front-end
-
-Assurez-vous d'avoir Node.js et Git installés sur votre machine avant de commencer. Si le déploiement est fait sur la même machine que le back-end, commencez directement à l’étape 2.
-
-\
-**Étape 1 : Cloner le dépôt GitHub**
-1. Ouvrez une ligne de commande ou un terminal.
-2. Naviguez vers le répertoire où vous souhaitez cloner le projet.
-3. Exécutez la commande suivante pour cloner le dépôt depuis GitHub :
-```bash
-git clone https://github.com/yoyo53/Y.git
+### 3. Load Environment Variables
+Copy the `.env.example` file and rename it to `.env`, then fill in the necessary values.
+```sh
+cp .env.example .env
 ```
 
-\
-**Étape 2 : Configuration du front-end**
-1. Accédez au répertoire du front-end :
-```bash
-cd Y/front
-```
-2. Exécutez la commande suivante pour installer les dépendances :
-```bash
-npm install
-```
+### 4. Start Minikube with the Desired Gateway
+- **For Ingress Gateway**:
+  ```sh
+  bash scripts/start-ingress.sh
+  ```
+- **For Istio Gateway**:
+  ```sh
+  bash scripts/start-istio.sh
+  ```
 
-\
-**Étape 3 : Configuration de des paramètres du front-end**
-1. Dans le répertoire du front-end, recherchez un fichier `next.config.js`.
-2. Ouvrez le fichier `next.config.js` dans un éditeur de texte.
-3. Remplacez la valeur de la variable **ROOTAPI** par l’url de votre back-end.
-4. Remplacez la valeur des variables **basePath** et **BASE_PATH** par l'url de base sur laquelle votre application sera déployée.
+### 5. Configure `/etc/hosts` for Gateway Resolution
+- **For Istio Ingress Gateway**:
+  ```sh
+  minikube tunnel
+  ```
+  And in another terminal: 
+  ```sh
+  source .env
+  sudo bash -c "echo $(kubectl get svc istio-ingressgateway -n istio-system -o jsonpath='{.status.loadBalancer.ingress[].ip}') $POSTGRES_HOST $BACK_HOST $FRONT_HOST >> /etc/hosts"
+  ```
+- **For Minikube Ingress Gateway**:
+  ```sh
+  source .env
+  sudo bash -c "echo $(minikube ip) $POSTGRES_HOST $BACK_HOST $FRONT_HOST >> /etc/hosts"
+  ```
 
-\
-**Étape 4 : Compilation du front-end**
-1. Exécutez la commande suivante pour compiler le front-end en un site web statique :
-```bash
-npm run build
-```
-Le résultat de cette compilation sera disponible dans le dossier out. Le contenu de ce dossier peut ensuite être déployé comme un site internet statique sur le fournisseur d’hébergement web de votre choix.
+## Security Measures
+- **RBAC**: Implements Kubernetes Role-Based Access Control for secure access management.
+- **Secrets Management**: Ensures credentials and sensitive information are securely stored and accessed.
+- **SSL/TLS**: Automated certificate generation using OpenSSL to secure communication between services.
